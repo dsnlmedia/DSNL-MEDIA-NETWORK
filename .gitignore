@@ -1,0 +1,23 @@
+# Node dependencies
+node_modules/
+**/node_modules/
+
+# Env files
+.env
+**/.env
+.env.local
+
+# Build outputs
+build/
+dist/
+**/build/
+**/dist/
+
+# Caches
+**/.cache/
+**/.eslintcache
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
