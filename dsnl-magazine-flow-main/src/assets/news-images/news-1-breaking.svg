@@ -1,0 +1,25 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="breakingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c0392b;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#breakingGradient)"/>
+  
+  <!-- Breaking news banner -->
+  <rect x="50" y="120" width="300" height="60" rx="5" fill="white" opacity="0.95"/>
+  <rect x="60" y="130" width="80" height="40" rx="3" fill="#e74c3c"/>
+  
+  <!-- Breaking text -->
+  <text x="100" y="155" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="white">BREAKING</text>
+  <text x="250" y="155" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#333">LIVE NEWS</text>
+  
+  <!-- Alert icons -->
+  <g fill="white" opacity="0.8">
+    <polygon points="80,80 90,60 100,80 95,80 95,100 85,100"/>
+    <polygon points="320,80 330,60 340,80 335,80 335,100 325,100"/>
+  </g>
+  
+  <text x="200" y="250" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white">BREAKING NEWS</text>
+</svg>

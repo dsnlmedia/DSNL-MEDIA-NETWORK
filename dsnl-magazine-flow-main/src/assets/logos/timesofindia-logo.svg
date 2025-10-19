@@ -1,0 +1,20 @@
+<svg width="180" height="50" viewBox="0 0 180 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- Times of India Background -->
+  <rect width="180" height="50" fill="#004080" rx="6"/>
+  
+  <!-- Times of India Logo -->
+  <g transform="translate(10, 8)">
+    <!-- THE -->
+    <text x="0" y="18" font-family="Times, serif" font-size="16" font-weight="bold" fill="#ffffff">THE</text>
+    
+    <!-- TIMES -->
+    <text x="40" y="18" font-family="Times, serif" font-size="20" font-weight="bold" fill="#ffffff" letter-spacing="2px">TIMES</text>
+    
+    <!-- OF INDIA -->
+    <text x="10" y="32" font-family="Times, serif" font-size="14" font-weight="bold" fill="#ffffff" letter-spacing="1px">OF INDIA</text>
+  </g>
+  
+  <!-- Gold accent line -->
+  <rect x="0" y="42" width="180" height="3" fill="#ffd700"/>
+  <rect x="0" y="46" width="180" height="4" fill="#ff6b00"/>
+</svg>

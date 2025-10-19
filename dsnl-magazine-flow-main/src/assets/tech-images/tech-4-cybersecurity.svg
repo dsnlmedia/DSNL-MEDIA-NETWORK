@@ -1,0 +1,26 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="secGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d63031;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#74b9ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#secGradient)"/>
+  
+  <!-- Shield -->
+  <path d="M200 60 Q150 80 150 140 Q150 180 200 200 Q250 180 250 140 Q250 80 200 60" fill="white" opacity="0.9"/>
+  <path d="M200 70 Q165 85 165 135 Q165 165 200 180 Q235 165 235 135 Q235 85 200 70" fill="none" stroke="#333" stroke-width="2"/>
+  
+  <!-- Lock icon -->
+  <rect x="190" y="120" width="20" height="25" rx="3" fill="#333"/>
+  <path d="M185 120 Q185 110 195 110 Q205 110 205 120" fill="none" stroke="#333" stroke-width="3"/>
+  <circle cx="200" cy="135" r="3" fill="white"/>
+  
+  <!-- Security elements -->
+  <g stroke="white" stroke-width="2" fill="none" opacity="0.7">
+    <circle cx="120" cy="120" r="20" stroke-dasharray="5,5"/>
+    <circle cx="280" cy="120" r="20" stroke-dasharray="5,5"/>
+  </g>
+  
+  <text x="200" y="240" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="white">CYBERSECURITY</text>
+</svg>

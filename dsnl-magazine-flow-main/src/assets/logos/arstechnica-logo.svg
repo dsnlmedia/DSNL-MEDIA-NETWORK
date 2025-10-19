@@ -1,0 +1,5 @@
+<svg width="140" height="50" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="140" height="50" fill="#ff4500" rx="6"/>
+  <text x="70" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ars</text>
+  <text x="70" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">technica</text>
+</svg>

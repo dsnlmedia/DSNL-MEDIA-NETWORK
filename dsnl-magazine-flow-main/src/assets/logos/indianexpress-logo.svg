@@ -1,0 +1,20 @@
+<svg width="180" height="50" viewBox="0 0 180 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- Indian Express Background -->
+  <rect width="180" height="50" fill="#1a1a1a" rx="6"/>
+  
+  <!-- Indian Express Logo -->
+  <g transform="translate(10, 8)">
+    <!-- THE -->
+    <text x="0" y="16" font-family="Times, serif" font-size="12" font-weight="bold" fill="#ffffff">THE</text>
+    
+    <!-- INDIAN -->
+    <text x="30" y="16" font-family="Times, serif" font-size="14" font-weight="bold" fill="#ffffff" letter-spacing="1px">INDIAN</text>
+    
+    <!-- EXPRESS -->
+    <text x="20" y="30" font-family="Times, serif" font-size="16" font-weight="bold" fill="#ffffff" letter-spacing="2px">EXPRESS</text>
+  </g>
+  
+  <!-- Express signature line -->
+  <rect x="0" y="42" width="180" height="4" fill="#0066cc"/>
+  <rect x="0" y="46" width="180" height="4" fill="#004499"/>
+</svg>

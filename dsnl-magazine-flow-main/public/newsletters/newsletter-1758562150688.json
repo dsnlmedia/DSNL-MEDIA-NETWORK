@@ -1,0 +1,59 @@
+{
+  "id": "newsletter-1758562150688",
+  "title": "DSNL Weekly Digest - 22/9/2025",
+  "content": "\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>DSNL Weekly Digest</title>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background-color: #f8f9fa; }\n        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }\n        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }\n        .logo { width: 50px; height: 50px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; font-weight: bold; font-size: 24px; }\n        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }\n        .header p { font-size: 16px; opacity: 0.9; margin-bottom: 5px; }\n        .date { font-size: 14px; opacity: 0.8; }\n        .content { padding: 40px 30px; }\n        .intro { text-align: center; margin-bottom: 40px; }\n        .intro h2 { font-size: 24px; color: #2d3748; margin-bottom: 12px; }\n        .intro p { font-size: 16px; color: #718096; }\n        .story { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 24px; overflow: hidden; }\n        .story-image { width: 100%; height: 200px; object-fit: cover; display: block; }\n        .story-content { padding: 24px; }\n        .story-category { display: inline-block; background-color: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }\n        .story-title { font-size: 20px; font-weight: 600; color: #2d3748; margin-bottom: 12px; }\n        .story-title a { color: inherit; text-decoration: none; }\n        .story-description { font-size: 16px; color: #4a5568; margin-bottom: 16px; }\n        .story-meta { font-size: 14px; color: #718096; display: flex; align-items: center; gap: 12px; }\n        .featured { border: 2px solid #667eea; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); }\n        .footer { background-color: #2d3748; color: white; padding: 32px 30px; text-align: center; }\n        .footer-logo { font-size: 20px; font-weight: 700; margin-bottom: 16px; }\n        .footer p { font-size: 14px; opacity: 0.8; margin-bottom: 8px; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <div class=\"logo\">D</div>\n            <h1>DSNL Weekly Digest</h1>\n            <p>Your weekly dose of essential news</p>\n            <div class=\"date\">Monday, September 22, 2025</div>\n        </div>\n        \n        <div class=\"content\">\n            <div class=\"intro\">\n                <h2>This Week's Top Stories</h2>\n                <p>Here are the most important stories from the past week, curated just for you.</p>\n            </div>\n            \n            <div class=\"stories-grid\">\n                \n      <div class=\"story featured\">\n        <img src=\"https://via.placeholder.com/400x200?text=AI+Technology\" alt=\"AI Breakthrough: New Language Model Surpasses Human Performance\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Technology</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://example.com/ai-breakthrough\" target=\"_blank\">AI Breakthrough: New Language Model Surpasses Human Performance</a>\n          </h3>\n          <p class=\"story-description\">Researchers have developed a revolutionary AI system that demonstrates unprecedented understanding of complex reasoning tasks, marking a significant milestone in artificial intelligence development.</p>\n          <div class=\"story-meta\">\n            <span>By BBC News</span>\n            <span>•</span>\n            <span>2 hours ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://via.placeholder.com/400x200?text=Market+Rally\" alt=\"Global Markets Rally as Economic Indicators Show Strong Growth\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Business</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://example.com/market-rally\" target=\"_blank\">Global Markets Rally as Economic Indicators Show Strong Growth</a>\n          </h3>\n          <p class=\"story-description\">Stock markets worldwide experienced significant gains today following the release of positive economic data, with tech and energy sectors leading the surge in trading volumes.</p>\n          <div class=\"story-meta\">\n            <span>By CNN</span>\n            <span>•</span>\n            <span>4 hours ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://via.placeholder.com/400x200?text=Climate+Summit\" alt=\"Climate Summit Reaches Historic Agreement on Carbon Reduction\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">World News</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://example.com/climate-summit\" target=\"_blank\">Climate Summit Reaches Historic Agreement on Carbon Reduction</a>\n          </h3>\n          <p class=\"story-description\">World leaders have signed a landmark climate agreement setting ambitious targets for carbon emissions reduction, with binding commitments from major industrial nations.</p>\n          <div class=\"story-meta\">\n            <span>By BBC News</span>\n            <span>•</span>\n            <span>6 hours ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://via.placeholder.com/400x200?text=Clean+Energy\" alt=\"Revolutionary Clean Energy Technology Promises 90% Efficiency\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Technology</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://example.com/clean-energy\" target=\"_blank\">Revolutionary Clean Energy Technology Promises 90% Efficiency</a>\n          </h3>\n          <p class=\"story-description\">Scientists have unveiled a groundbreaking solar panel technology that achieves unprecedented efficiency rates, potentially transforming the renewable energy landscape.</p>\n          <div class=\"story-meta\">\n            <span>By CNN</span>\n            <span>•</span>\n            <span>8 hours ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://via.placeholder.com/400x200?text=Cybersecurity\" alt=\"Major Tech Companies Announce Joint Cybersecurity Initiative\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Technology</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://example.com/cybersecurity\" target=\"_blank\">Major Tech Companies Announce Joint Cybersecurity Initiative</a>\n          </h3>\n          <p class=\"story-description\">Leading technology firms have formed an unprecedented alliance to combat cyber threats, sharing resources and expertise to enhance global digital security measures.</p>\n          <div class=\"story-meta\">\n            <span>By BBC News</span>\n            <span>•</span>\n            <span>10 hours ago</span>\n          </div>\n        </div>\n      </div>\n    \n            </div>\n        </div>\n        \n        <div class=\"footer\">\n            <div class=\"footer-logo\">DSNL Media Network</div>\n            <p>Premium news and magazine-style content for the modern reader.</p>\n            <p>© 2024 DSNL Media Network. All rights reserved.</p>\n        </div>\n    </div>\n</body>\n</html>\n  ",
+  "stories": [
+    {
+      "title": "AI Breakthrough: New Language Model Surpasses Human Performance",
+      "description": "Researchers have developed a revolutionary AI system that demonstrates unprecedented understanding of complex reasoning tasks, marking a significant milestone in artificial intelligence development.",
+      "category": "Technology",
+      "source": "BBC News",
+      "timeAgo": "2 hours ago",
+      "imageUrl": "https://via.placeholder.com/400x200?text=AI+Technology",
+      "link": "https://example.com/ai-breakthrough",
+      "pubDate": "2025-09-22T15:29:10.674Z"
+    },
+    {
+      "title": "Global Markets Rally as Economic Indicators Show Strong Growth",
+      "description": "Stock markets worldwide experienced significant gains today following the release of positive economic data, with tech and energy sectors leading the surge in trading volumes.",
+      "category": "Business",
+      "source": "CNN",
+      "timeAgo": "4 hours ago",
+      "imageUrl": "https://via.placeholder.com/400x200?text=Market+Rally",
+      "link": "https://example.com/market-rally",
+      "pubDate": "2025-09-22T13:29:10.675Z"
+    },
+    {
+      "title": "Climate Summit Reaches Historic Agreement on Carbon Reduction",
+      "description": "World leaders have signed a landmark climate agreement setting ambitious targets for carbon emissions reduction, with binding commitments from major industrial nations.",
+      "category": "World News",
+      "source": "BBC News",
+      "timeAgo": "6 hours ago",
+      "imageUrl": "https://via.placeholder.com/400x200?text=Climate+Summit",
+      "link": "https://example.com/climate-summit",
+      "pubDate": "2025-09-22T11:29:10.675Z"
+    },
+    {
+      "title": "Revolutionary Clean Energy Technology Promises 90% Efficiency",
+      "description": "Scientists have unveiled a groundbreaking solar panel technology that achieves unprecedented efficiency rates, potentially transforming the renewable energy landscape.",
+      "category": "Technology",
+      "source": "CNN",
+      "timeAgo": "8 hours ago",
+      "imageUrl": "https://via.placeholder.com/400x200?text=Clean+Energy",
+      "link": "https://example.com/clean-energy",
+      "pubDate": "2025-09-22T09:29:10.675Z"
+    },
+    {
+      "title": "Major Tech Companies Announce Joint Cybersecurity Initiative",
+      "description": "Leading technology firms have formed an unprecedented alliance to combat cyber threats, sharing resources and expertise to enhance global digital security measures.",
+      "category": "Technology",
+      "source": "BBC News",
+      "timeAgo": "10 hours ago",
+      "imageUrl": "https://via.placeholder.com/400x200?text=Cybersecurity",
+      "link": "https://example.com/cybersecurity",
+      "pubDate": "2025-09-22T07:29:10.675Z"
+    }
+  ],
+  "generatedDate": "2025-09-22T17:29:10.688Z",
+  "status": "ready"
+}

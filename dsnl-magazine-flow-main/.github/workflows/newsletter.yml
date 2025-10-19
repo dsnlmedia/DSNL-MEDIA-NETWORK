@@ -1,0 +1,131 @@
+name: Weekly Newsletter Generation
+
+on:
+  schedule:
+    # Run every Sunday at 8:00 AM UTC (adjust timezone as needed)
+    - cron: '0 8 * * 0'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  generate-newsletter:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Generate newsletter content
+      run: node scripts/generateNewsletter.cjs
+      env:
+        # Add any environment variables needed for RSS fetching
+        NODE_ENV: production
+    
+    - name: Setup EmailJS environment
+      env:
+        EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+        EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+      run: |
+        echo "EmailJS configuration loaded"
+        # These will be used by the sending script
+    
+    - name: Send newsletter to subscribers
+      run: node scripts/sendNewsletter.cjs
+      env:
+        EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+        EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+        EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
+    
+    - name: Archive newsletter files
+      run: |
+        # Create archive directory if it doesn't exist
+        mkdir -p public/newsletters/archive/$(date +%Y)
+        
+        # Move generated newsletters to archive
+        if ls public/newsletters/newsletter-*.html 1> /dev/null 2>&1; then
+          cp public/newsletters/newsletter-*.html public/newsletters/archive/$(date +%Y)/
+          cp public/newsletters/newsletter-*.json public/newsletters/archive/$(date +%Y)/
+        fi
+    
+    - name: Update subscribers count
+      run: |
+        # Create a simple stats file
+        echo "{\"lastNewsletterSent\": \"$(date -Iseconds)\", \"status\": \"success\"}" > public/data/newsletter-stats.json
+    
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add public/newsletters/ public/data/
+        
+        # Check if there are changes to commit
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "📧 Weekly newsletter generated and sent - $(date +%Y-%m-%d)"
+          git push
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Cleanup old newsletters
+      run: |
+        # Keep only last 12 newsletters (3 months worth)
+        cd public/newsletters
+        if ls newsletter-*.html 1> /dev/null 2>&1; then
+          ls -t newsletter-*.html | tail -n +13 | xargs -r rm
+          ls -t newsletter-*.json | tail -n +13 | xargs -r rm
+        fi
+    
+    - name: Create workflow summary
+      run: |
+        echo "## 📧 Weekly Newsletter Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Generation Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status:** ✅ Success" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f public/newsletters/newsletter-*.json ]; then
+          STORY_COUNT=$(jq '.stories | length' public/newsletters/newsletter-*.json | head -1)
+          echo "- **Stories Curated:** $STORY_COUNT" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f public/data/newsletter-stats.json ]; then
+          echo "- **Last Sent:** $(jq -r '.lastNewsletterSent' public/data/newsletter-stats.json)" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Newsletter Archives" >> $GITHUB_STEP_SUMMARY
+        echo "View archived newsletters in the \`public/newsletters/archive/\` directory." >> $GITHUB_STEP_SUMMARY
+
+  # Fallback job in case newsletter generation fails
+  handle-failure:
+    runs-on: ubuntu-latest
+    needs: generate-newsletter
+    if: failure()
+    
+    steps:
+    - name: Notify failure
+      run: |
+        echo "Newsletter generation failed. Check the logs above for details."
+        echo "## ❌ Newsletter Generation Failed" >> $GITHUB_STEP_SUMMARY
+        echo "The weekly newsletter could not be generated. Please check the workflow logs for details." >> $GITHUB_STEP_SUMMARY
+        echo "- **Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status:** Failed" >> $GITHUB_STEP_SUMMARY
+    
+    # Optionally send failure notification via email
+    - name: Send failure notification
+      run: |
+        # This would require additional EmailJS setup for admin notifications
+        echo "Consider setting up admin notifications for newsletter failures"

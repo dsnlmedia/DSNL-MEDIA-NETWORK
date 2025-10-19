@@ -1,0 +1,20 @@
+<svg width="180" height="50" viewBox="0 0 180 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- Economic Times Background -->
+  <rect width="180" height="50" fill="#0052cc" rx="6"/>
+  
+  <!-- Economic Times Logo -->
+  <g transform="translate(10, 8)">
+    <!-- THE -->
+    <text x="0" y="16" font-family="Times, serif" font-size="12" font-weight="bold" fill="#ffffff">THE</text>
+    
+    <!-- ECONOMIC -->
+    <text x="35" y="16" font-family="Times, serif" font-size="14" font-weight="bold" fill="#ffffff" letter-spacing="1px">ECONOMIC</text>
+    
+    <!-- TIMES -->
+    <text x="35" y="30" font-family="Times, serif" font-size="16" font-weight="bold" fill="#ffffff" letter-spacing="2px">TIMES</text>
+  </g>
+  
+  <!-- Orange accent -->
+  <rect x="0" y="42" width="180" height="4" fill="#ff6600"/>
+  <rect x="0" y="46" width="180" height="4" fill="#ffaa00"/>
+</svg>

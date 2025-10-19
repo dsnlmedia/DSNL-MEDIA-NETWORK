@@ -1,0 +1,23 @@
+<svg width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- BBC Logo with iconic three blocks design -->
+  
+  <!-- Three black blocks background -->
+  <g>
+    <!-- Block 1 - B -->
+    <rect x="10" y="5" width="30" height="40" fill="#000000" rx="2"/>
+    <!-- Block 2 - B -->
+    <rect x="45" y="5" width="30" height="40" fill="#000000" rx="2"/>
+    <!-- Block 3 - C -->
+    <rect x="80" y="5" width="30" height="40" fill="#000000" rx="2"/>
+  </g>
+  
+  <!-- White letters -->
+  <g fill="#ffffff" font-family="Arial, sans-serif" font-weight="bold" font-size="28">
+    <!-- B -->
+    <text x="25" y="32" text-anchor="middle">B</text>
+    <!-- B -->
+    <text x="60" y="32" text-anchor="middle">B</text>
+    <!-- C -->
+    <text x="95" y="32" text-anchor="middle">C</text>
+  </g>
+</svg>

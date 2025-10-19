@@ -1,0 +1,69 @@
+{
+  "id": "newsletter-1758564230156",
+  "title": "DSNL Weekly Digest - 22/9/2025",
+  "content": "\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>DSNL Weekly Digest</title>\n    <style>\n        * { margin: 0; padding: 0; box-sizing: border-box; }\n        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background-color: #f8f9fa; }\n        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }\n        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }\n        .logo { width: 50px; height: 50px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; font-weight: bold; font-size: 24px; }\n        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }\n        .header p { font-size: 16px; opacity: 0.9; margin-bottom: 5px; }\n        .date { font-size: 14px; opacity: 0.8; }\n        .content { padding: 40px 30px; }\n        .intro { text-align: center; margin-bottom: 40px; }\n        .intro h2 { font-size: 24px; color: #2d3748; margin-bottom: 12px; }\n        .intro p { font-size: 16px; color: #718096; }\n        .story { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 24px; overflow: hidden; }\n        .story-image { width: 100%; height: 200px; object-fit: cover; display: block; }\n        .story-content { padding: 24px; }\n        .story-category { display: inline-block; background-color: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }\n        .story-title { font-size: 20px; font-weight: 600; color: #2d3748; margin-bottom: 12px; }\n        .story-title a { color: inherit; text-decoration: none; }\n        .story-description { font-size: 16px; color: #4a5568; margin-bottom: 16px; }\n        .story-meta { font-size: 14px; color: #718096; display: flex; align-items: center; gap: 12px; }\n        .featured { border: 2px solid #667eea; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); }\n        .footer { background-color: #2d3748; color: white; padding: 32px 30px; text-align: center; }\n        .footer-logo { font-size: 20px; font-weight: 700; margin-bottom: 16px; }\n        .footer p { font-size: 14px; opacity: 0.8; margin-bottom: 8px; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <div class=\"logo\">D</div>\n            <h1>DSNL Weekly Digest</h1>\n            <p>Your weekly dose of essential news</p>\n            <div class=\"date\">Monday, September 22, 2025</div>\n        </div>\n        \n        <div class=\"content\">\n            <div class=\"intro\">\n                <h2>This Week's Top Stories</h2>\n                <p>Here are the most important stories from the past week, curated just for you.</p>\n            </div>\n            \n            <div class=\"stories-grid\">\n                \n      <div class=\"story featured\">\n        <img src=\"https://media.wired.com/photos/68cc48361c8be691cd113d04/master/pass/Uncanny-Valley-Story-Roundup-2234086021.jpg\" alt=\"WIRED Roundup: The Right Embraces Cancel Culture\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Technology</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://www.wired.com/story/uncanny-valley-podcast-wired-roundup-the-right-embraces-cancel-culture/\" target=\"_blank\">WIRED Roundup: The Right Embraces Cancel Culture</a>\n          </h3>\n          <p class=\"story-description\">On this episode of Uncanny Valley, we discuss OpenAI's new teen safety features, the right's retaliation against critics of the late Charlie Kirk, and more of the week’s biggest stories....</p>\n          <div class=\"story-meta\">\n            <span>By Wired</span>\n            <span>•</span>\n            <span>Less than an hour ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://media.wired.com/photos/68d10cb8881e3229d0ad68d6/master/pass/GettyImages-1266429167.jpg\" alt=\"$3,800 Flights and Aborted Takeoffs: How Trump’s H-1B Announcement Panicked Tech Workers\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Technology</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://www.wired.com/story/dollar3800-flights-and-aborted-takeoffs-how-trumps-h-1b-announcement-panicked-tech-workers/\" target=\"_blank\">$3,800 Flights and Aborted Takeoffs: How Trump’s H-1B Announcement Panicked Tech Workers</a>\n          </h3>\n          <p class=\"story-description\">President Trump’s sudden policy shift sent tech firms scrambling to get immigrant workers back to the US and avoid $100,000 fees....</p>\n          <div class=\"story-meta\">\n            <span>By Wired</span>\n            <span>•</span>\n            <span>3 hours ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://api.time.com/wp-content/uploads/2025/07/Untitled-design-8.png\" alt=\"Netanyahu Speaks Out Against Mamdani After NYC Mayoral Candidate Said He Would Uphold ICC&#8217;s Arrest Warrant for Israeli PM\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Politics</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://time.com/7304377/netanyahu-mamdani-policies-attack-arrest-warrant/\" target=\"_blank\">Netanyahu Speaks Out Against Mamdani After NYC Mayoral Candidate Said He Would Uphold ICC&#8217;s Arrest Warrant for Israeli PM</a>\n          </h3>\n          <p class=\"story-description\">...</p>\n          <div class=\"story-meta\">\n            <span>By Time Magazine</span>\n            <span>•</span>\n            <span>62 days ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://api.time.com/wp-content/uploads/2025/07/trump-bibi.jpg\" alt=\"How Israel Appears to Be Gambling With the Trump Administration’s Patience\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">Politics</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://time.com/7304352/israel-netanyahu-trump-syria-strikes-gaza-catholic-church-iran-ceasefire/\" target=\"_blank\">How Israel Appears to Be Gambling With the Trump Administration’s Patience</a>\n          </h3>\n          <p class=\"story-description\">...</p>\n          <div class=\"story-meta\">\n            <span>By Time Magazine</span>\n            <span>•</span>\n            <span>62 days ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://api.time.com/wp-content/uploads/2025/07/GettyImages-2218068645.jpg\" alt=\"&#8216;Free America&#8217;: Anti-Trump Administration Protests Planned Across U.S. on July 4\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">World News</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://time.com/7299015/anti-trump-administration-protests-united-states-july-4-independence-day/\" target=\"_blank\">&#8216;Free America&#8217;: Anti-Trump Administration Protests Planned Across U.S. on July 4</a>\n          </h3>\n          <p class=\"story-description\">...</p>\n          <div class=\"story-meta\">\n            <span>By Time Magazine</span>\n            <span>•</span>\n            <span>83 days ago</span>\n          </div>\n        </div>\n      </div>\n    \n      <div class=\"story \">\n        <img src=\"https://api.time.com/wp-content/uploads/2025/06/ai-bioweapons-risk.jpg\" alt=\"In the Loop: Is AI Making the Next Pandemic More Likely?\" class=\"story-image\" />\n        <div class=\"story-content\">\n          <span class=\"story-category\">World News</span>\n          <h3 class=\"story-title\">\n            <a href=\"https://time.com/7298731/in-the-loop-pandemic-ai-study/\" target=\"_blank\">In the Loop: Is AI Making the Next Pandemic More Likely?</a>\n          </h3>\n          <p class=\"story-description\">...</p>\n          <div class=\"story-meta\">\n            <span>By Time Magazine</span>\n            <span>•</span>\n            <span>83 days ago</span>\n          </div>\n        </div>\n      </div>\n    \n            </div>\n        </div>\n        \n        <div class=\"footer\">\n            <div class=\"footer-logo\">DSNL Media Network</div>\n            <p>Premium news and magazine-style content for the modern reader.</p>\n            <p>© 2024 DSNL Media Network. All rights reserved.</p>\n        </div>\n    </div>\n</body>\n</html>\n  ",
+  "stories": [
+    {
+      "title": "WIRED Roundup: The Right Embraces Cancel Culture",
+      "description": "On this episode of Uncanny Valley, we discuss OpenAI's new teen safety features, the right's retaliation against critics of the late Charlie Kirk, and more of the week’s biggest stories....",
+      "link": "https://www.wired.com/story/uncanny-valley-podcast-wired-roundup-the-right-embraces-cancel-culture/",
+      "pubDate": "Mon, 22 Sep 2025 17:14:07 +0000",
+      "imageUrl": "https://media.wired.com/photos/68cc48361c8be691cd113d04/master/pass/Uncanny-Valley-Story-Roundup-2234086021.jpg",
+      "timeAgo": "Less than an hour ago",
+      "category": "Technology",
+      "source": "Wired"
+    },
+    {
+      "title": "$3,800 Flights and Aborted Takeoffs: How Trump’s H-1B Announcement Panicked Tech Workers",
+      "description": "President Trump’s sudden policy shift sent tech firms scrambling to get immigrant workers back to the US and avoid $100,000 fees....",
+      "link": "https://www.wired.com/story/dollar3800-flights-and-aborted-takeoffs-how-trumps-h-1b-announcement-panicked-tech-workers/",
+      "pubDate": "Mon, 22 Sep 2025 14:55:48 +0000",
+      "imageUrl": "https://media.wired.com/photos/68d10cb8881e3229d0ad68d6/master/pass/GettyImages-1266429167.jpg",
+      "timeAgo": "3 hours ago",
+      "category": "Technology",
+      "source": "Wired"
+    },
+    {
+      "title": "Netanyahu Speaks Out Against Mamdani After NYC Mayoral Candidate Said He Would Uphold ICC&#8217;s Arrest Warrant for Israeli PM",
+      "description": "...",
+      "link": "https://time.com/7304377/netanyahu-mamdani-policies-attack-arrest-warrant/",
+      "pubDate": "Tue, 22 Jul 2025 13:10:52 +0000",
+      "imageUrl": "https://api.time.com/wp-content/uploads/2025/07/Untitled-design-8.png",
+      "timeAgo": "62 days ago",
+      "category": "Politics",
+      "source": "Time Magazine"
+    },
+    {
+      "title": "How Israel Appears to Be Gambling With the Trump Administration’s Patience",
+      "description": "...",
+      "link": "https://time.com/7304352/israel-netanyahu-trump-syria-strikes-gaza-catholic-church-iran-ceasefire/",
+      "pubDate": "Tue, 22 Jul 2025 09:55:00 +0000",
+      "imageUrl": "https://api.time.com/wp-content/uploads/2025/07/trump-bibi.jpg",
+      "timeAgo": "62 days ago",
+      "category": "Politics",
+      "source": "Time Magazine"
+    },
+    {
+      "title": "&#8216;Free America&#8217;: Anti-Trump Administration Protests Planned Across U.S. on July 4",
+      "description": "...",
+      "link": "https://time.com/7299015/anti-trump-administration-protests-united-states-july-4-independence-day/",
+      "pubDate": "Tue, 01 Jul 2025 12:34:54 +0000",
+      "imageUrl": "https://api.time.com/wp-content/uploads/2025/07/GettyImages-2218068645.jpg",
+      "timeAgo": "83 days ago",
+      "category": "World News",
+      "source": "Time Magazine"
+    },
+    {
+      "title": "In the Loop: Is AI Making the Next Pandemic More Likely?",
+      "description": "...",
+      "link": "https://time.com/7298731/in-the-loop-pandemic-ai-study/",
+      "pubDate": "Tue, 01 Jul 2025 12:05:00 +0000",
+      "imageUrl": "https://api.time.com/wp-content/uploads/2025/06/ai-bioweapons-risk.jpg",
+      "timeAgo": "83 days ago",
+      "category": "World News",
+      "source": "Time Magazine"
+    }
+  ],
+  "generatedDate": "2025-09-22T18:03:50.157Z",
+  "status": "ready"
+}

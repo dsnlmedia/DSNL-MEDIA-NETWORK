@@ -1,0 +1,28 @@
+<svg width="180" height="50" viewBox="0 0 180 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hindustan Times Background -->
+  <rect width="180" height="50" fill="#004080" rx="6"/>
+  
+  <!-- Hindustan Times Logo -->
+  <g transform="translate(10, 8)">
+    <!-- HINDUSTAN -->
+    <text x="0" y="18" font-family="Times, serif" font-size="14" font-weight="bold" fill="#ffffff" letter-spacing="1px">HINDUSTAN</text>
+    
+    <!-- TIMES -->
+    <text x="50" y="32" font-family="Times, serif" font-size="16" font-weight="bold" fill="#ffffff" letter-spacing="2px">TIMES</text>
+  </g>
+  
+  <!-- Blue gradient -->
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#004080"/>
+      <stop offset="100%" stop-color="#0066cc"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="50" fill="url(#blueGrad)" rx="6"/>
+  
+  <!-- Reapply text on top -->
+  <g transform="translate(10, 8)">
+    <text x="0" y="18" font-family="Times, serif" font-size="14" font-weight="bold" fill="#ffffff" letter-spacing="1px">HINDUSTAN</text>
+    <text x="50" y="32" font-family="Times, serif" font-size="16" font-weight="bold" fill="#ffffff" letter-spacing="2px">TIMES</text>
+  </g>
+</svg>

@@ -1,0 +1,380 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom PDF Viewer Styles */
+.pdf-viewer-container {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.pdf-embed-container {
+  transition: transform 0.2s ease;
+  overflow: auto;
+}
+
+.pdf-embed-container iframe {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Custom scrollbar for PDF container */
+.pdf-embed-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.pdf-embed-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.pdf-embed-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.pdf-embed-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Ensure smooth scaling on zoom */
+.pdf-embed-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Hide scrollbars in fullscreen mode for cleaner look */
+.pdf-viewer-container.fixed .pdf-embed-container {
+  overflow: hidden;
+}
+
+/* Loading animation improvements */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pdf-embed-container iframe {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* DSNL Media Network Design System - Flipboard-inspired Premium News Platform
+All colors follow Flipboard's exact color scheme for sophisticated editorial design.
+All colors MUST be HSL for proper theming.
+*/
+
+@layer base {
+  :root {
+    /* Flipboard-inspired Background System */
+    --background: 0 0% 97%; /* Ultra Light Gray - page backgrounds */
+    --foreground: 0 0% 0%; /* Rich Black - primary text */
+
+    /* Card & Content System */
+    --card: 0 0% 100%; /* Pure White - card backgrounds */
+    --card-foreground: 0 0% 0%; /* Rich Black - card text */
+
+    /* Interactive Elements */
+    --popover: 0 0% 100%; /* Pure White */
+    --popover-foreground: 0 0% 0%; /* Rich Black */
+
+    /* DSNL Brand Colors - Flipboard Red System */
+    --primary: 0 80% 52%; /* Primary Red #E12828 - brand, CTAs */
+    --primary-foreground: 0 0% 100%; /* Pure White - text on red */
+
+    /* Supporting Text Colors */
+    --secondary: 0 0% 90%; /* Very Light Gray - subtle backgrounds */
+    --secondary-foreground: 0 0% 22%; /* Dark Charcoal - secondary text */
+
+    /* Interface Supporting Elements */
+    --muted: 0 0% 97%; /* Ultra Light Gray - muted backgrounds */
+    --muted-foreground: 0 0% 60%; /* Medium Gray - metadata, timestamps */
+
+    /* Accent & Hover States */
+    --accent: 0 29% 94%; /* Light Pink - hover states */
+    --accent-foreground: 0 0% 0%; /* Rich Black - text on accent */
+
+    /* Error & System States */
+    --destructive: 0 84.2% 60.2%; /* Standard destructive */
+    --destructive-foreground: 0 0% 100%; /* White on destructive */
+
+    /* Borders & Inputs */
+    --border: 0 0% 80%; /* Light Gray - dividers, borders */
+    --input: 0 0% 80%; /* Light Gray - input borders */
+    --ring: 0 80% 52%; /* Primary Red - focus rings */
+
+    /* Layout & Spacing */
+    --radius: 0.75rem; /* Slightly larger radius for premium feel */
+
+    /* Magazine Content Hierarchy */
+    --text-primary: 0 0% 0%; /* Rich Black - headlines */
+    --text-secondary: 0 0% 22%; /* Dark Charcoal - body text */
+    --text-supporting: 0 0% 60%; /* Medium Gray - metadata */
+    
+    /* Premium Content Accents */
+    --premium-accent: 0 54% 91%; /* Medium Pink - DSNL Originals */
+    --category-tag: 0 80% 52%; /* Primary Red - category badges */
+    
+    /* Interactive Feedback */
+    --hover-accent: 0 29% 94%; /* Light Pink - hover feedback */
+    --card-shadow: 0 0% 90%; /* Very Light Gray - card shadows */
+  }
+
+  .dark {
+    /* Dark mode maintains Flipboard's sophisticated approach */
+    --background: 0 0% 4%; /* Dark background */
+    --foreground: 0 0% 98%; /* Light text */
+    
+    --card: 0 0% 8%; /* Dark card */
+    --card-foreground: 0 0% 95%; /* Light card text */
+    
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    
+    --primary: 0 80% 52%; /* Keep brand red */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 15%; /* Dark secondary */
+    --secondary-foreground: 0 0% 80%; /* Light secondary text */
+    
+    --muted: 0 0% 12%; /* Dark muted */
+    --muted-foreground: 0 0% 65%; /* Light muted text */
+    
+    --accent: 0 0% 15%; /* Dark accent */
+    --accent-foreground: 0 0% 90%; /* Light accent text */
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 15%; /* Dark border */
+    --input: 0 0% 15%; /* Dark input */
+    --ring: 0 80% 52%; /* Keep brand red for focus */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Premium Typography System */
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+  
+  .font-sans {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Magazine Content Classes */
+  .text-headline {
+    color: hsl(var(--text-primary));
+    font-weight: 600;
+  }
+  
+  .text-body {
+    color: hsl(var(--text-secondary));
+    font-weight: 400;
+  }
+  
+  .text-metadata {
+    color: hsl(var(--text-supporting));
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  /* Premium Card System */
+  .magazine-card {
+    @apply bg-card border-0 rounded-lg overflow-hidden transition-all duration-300;
+    box-shadow: 0 2px 8px hsl(var(--card-shadow) / 0.1);
+  }
+  
+  .magazine-card:hover {
+    @apply bg-accent/50;
+    box-shadow: 0 8px 25px hsl(var(--card-shadow) / 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Category Badge System */
+  .category-badge {
+    @apply inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full;
+    background-color: hsl(var(--category-tag));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* DSNL Originals Premium Styling */
+  .dsnl-original {
+    @apply relative;
+    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--premium-accent)) 100%);
+  }
+
+  .dsnl-original::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-1 rounded-t-lg;
+    background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
+  }
+
+  /* Interactive Elements */
+  .interactive-hover {
+    @apply transition-all duration-200 hover:bg-hover-accent;
+  }
+
+  /* Text Utilities */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Magazine Grid System */
+  .magazine-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .magazine-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .magazine-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  /* Video Component System */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .video-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .video-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .video-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  /* Video Card Hover Effects */
+  .video-card {
+    @apply transition-all duration-300 hover:shadow-lg;
+  }
+
+  .video-card:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Video Player Modal */
+  .video-modal-content {
+    @apply max-w-4xl w-[95vw] max-h-[95vh];
+  }
+
+  @media (max-width: 768px) {
+    .video-modal-content {
+      @apply w-full max-w-none m-0 rounded-none;
+      height: 100vh;
+      max-height: 100vh;
+    }
+  }
+
+  /* Responsive Video Embed */
+  .video-embed-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  }
+
+  .video-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Loading Animation for Videos */
+  .video-loading {
+    @apply flex items-center justify-center bg-muted;
+    min-height: 200px;
+  }
+
+  .video-skeleton {
+    @apply animate-pulse bg-muted rounded-lg;
+  }
+
+  /* Mobile Menu Animations */
+  .mobile-menu-enter {
+    animation: slideInRight 0.3s ease-out;
+  }
+
+  .mobile-menu-exit {
+    animation: slideOutRight 0.3s ease-in;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Backdrop fade animation */
+  .backdrop-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}

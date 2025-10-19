@@ -1,0 +1,5 @@
+<svg width="150" height="50" viewBox="0 0 150 50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="150" height="50" fill="#000000" rx="6"/>
+  <text x="75" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">Bloomberg</text>
+  <rect x="0" y="42" width="150" height="4" fill="#ffb700"/>
+</svg>

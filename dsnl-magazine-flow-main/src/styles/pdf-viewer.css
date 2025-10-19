@@ -1,0 +1,78 @@
+/* Hide native PDF viewer toolbars and controls */
+embed[type="application/pdf"] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Hide PDF.js viewer toolbar */
+.pdfViewer .toolbar {
+  display: none !important;
+}
+
+/* Hide browser PDF controls */
+iframe[src*=".pdf"] {
+  pointer-events: none;
+}
+
+iframe[src*=".pdf"]:hover {
+  pointer-events: auto;
+}
+
+/* Hide PDF embed controls */
+object[data*=".pdf"] {
+  overflow: hidden !important;
+}
+
+/* Custom styles for react-pdf */
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page {
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.react-pdf__Page__canvas {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Hide any PDF viewer UI elements */
+.pdf-viewer-container {
+  position: relative;
+  overflow: visible;
+}
+
+.pdf-viewer-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: white;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Force hide any remaining PDF toolbars */
+.pdf-viewer-container iframe,
+.pdf-viewer-container embed,
+.pdf-viewer-container object {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Hide scrollbars if they appear */
+.pdf-viewer-container::-webkit-scrollbar {
+  display: none;
+}
+
+.pdf-viewer-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

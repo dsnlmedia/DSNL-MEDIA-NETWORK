@@ -1,0 +1,22 @@
+<svg width="140" height="50" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- NDTV Background -->
+  <rect width="140" height="50" fill="#1a1a1a" rx="6"/>
+  
+  <!-- NDTV Logo Design -->
+  <g transform="translate(15, 8)">
+    <!-- N -->
+    <polygon points="0,5 8,5 8,29 16,5 24,5 24,34 16,34 16,12 8,34 0,34" fill="#ffffff"/>
+    
+    <!-- D -->
+    <path d="M28,5 L40,5 C48,5 52,10 52,19.5 C52,29 48,34 40,34 L28,34 Z M36,13 L36,26 L38,26 C42,26 44,23 44,19.5 C44,16 42,13 38,13 Z" fill="#ffffff"/>
+    
+    <!-- T -->
+    <polygon points="56,5 88,5 88,13 76,13 76,34 68,34 68,13 56,13" fill="#ffffff"/>
+    
+    <!-- V -->
+    <polygon points="92,5 100,5 104,26 108,5 116,5 110,34 98,34" fill="#ffffff"/>
+  </g>
+  
+  <!-- NDTV Red Accent -->
+  <rect x="0" y="42" width="140" height="8" fill="#c41e3a"/>
+</svg>

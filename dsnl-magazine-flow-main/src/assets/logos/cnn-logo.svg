@@ -1,0 +1,49 @@
+<svg width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- CNN Background -->
+  <rect width="120" height="50" fill="#cc0000" rx="6"/>
+  
+  <!-- CNN Logo -->
+  <g transform="translate(15, 8)">
+    <!-- C -->
+    <g fill="#ffffff">
+      <path d="M0,17 C0,8 7,3 15,3 C20,3 25,5 25,5 L23,10 C23,10 19,8 15,8 C10,8 7,12 7,17 C7,22 10,26 15,26 C19,26 23,24 23,24 L25,29 C25,29 20,31 15,31 C7,31 0,26 0,17 Z"/>
+    </g>
+    
+    <!-- N -->
+    <g fill="#ffffff" transform="translate(30, 0)">
+      <polygon points="0,3 6,3 6,22 12,3 18,3 18,31 12,31 12,12 6,31 0,31"/>
+    </g>
+    
+    <!-- N -->
+    <g fill="#ffffff" transform="translate(52, 0)">
+      <polygon points="0,3 6,3 6,22 12,3 18,3 18,31 12,31 12,12 6,31 0,31"/>
+    </g>
+  </g>
+  
+  <!-- CNN red gradient -->
+  <defs>
+    <linearGradient id="cnnRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#cc0000"/>
+      <stop offset="100%" stop-color="#990000"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="50" fill="url(#cnnRed)" rx="6"/>
+  
+  <!-- Reapply logo on top -->
+  <g transform="translate(15, 8)">
+    <!-- C -->
+    <g fill="#ffffff">
+      <path d="M0,17 C0,8 7,3 15,3 C20,3 25,5 25,5 L23,10 C23,10 19,8 15,8 C10,8 7,12 7,17 C7,22 10,26 15,26 C19,26 23,24 23,24 L25,29 C25,29 20,31 15,31 C7,31 0,26 0,17 Z"/>
+    </g>
+    
+    <!-- N -->
+    <g fill="#ffffff" transform="translate(30, 0)">
+      <polygon points="0,3 6,3 6,22 12,3 18,3 18,31 12,31 12,12 6,31 0,31"/>
+    </g>
+    
+    <!-- N -->
+    <g fill="#ffffff" transform="translate(52, 0)">
+      <polygon points="0,3 6,3 6,22 12,3 18,3 18,31 12,31 12,12 6,31 0,31"/>
+    </g>
+  </g>
+</svg>

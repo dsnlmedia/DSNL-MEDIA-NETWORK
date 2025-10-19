@@ -1,0 +1,20 @@
+<svg width="160" height="50" viewBox="0 0 160 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- India Today Background -->
+  <rect width="160" height="50" fill="#d32f2f" rx="6"/>
+  
+  <!-- India Today Logo -->
+  <g transform="translate(10, 8)">
+    <!-- INDIA -->
+    <text x="0" y="18" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" letter-spacing="1px">INDIA</text>
+    
+    <!-- TODAY -->
+    <text x="60" y="18" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" letter-spacing="1px">TODAY</text>
+    
+    <!-- Tagline -->
+    <text x="0" y="32" font-family="Arial, sans-serif" font-size="10" fill="#ffcccc">INDIA'S BEST MAGAZINE</text>
+  </g>
+  
+  <!-- Accent line -->
+  <rect x="0" y="42" width="160" height="3" fill="#ffeb3b"/>
+  <rect x="0" y="46" width="160" height="4" fill="#1976d2"/>
+</svg>
