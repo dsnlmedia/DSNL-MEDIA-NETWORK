@@ -7,7 +7,15 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
+    port: 9001,
+    proxy: {
+      '/blogger-feed': {
+        target: 'https://dsnlmedia.blogspot.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/blogger-feed/, '/feeds/posts/default'),
+        secure: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

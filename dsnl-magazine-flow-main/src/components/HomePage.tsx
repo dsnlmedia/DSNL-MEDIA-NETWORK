@@ -4,10 +4,13 @@ import { FounderSection } from "./FounderSection";
 import { StoryCard } from "./StoryCard";
 import { StoryModal } from "./StoryModal";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Globe, Briefcase, Smartphone, Users, ChevronRight, Zap, MapPin, Tv, Monitor, BarChart3, Building, Gamepad2, Heart, Loader2, Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Globe, Briefcase, Smartphone, Users, ChevronRight, Zap, MapPin, Tv, Monitor, BarChart3, Building, Gamepad2, Heart, Loader2, Trophy, BookOpen, Calendar, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useTrendingStories, useNewsByCategory } from "@/hooks/useNews";
+import { bloggerService, type BlogPost } from "@/services/bloggerService";
 import heroTechImage from "@/assets/hero-tech.jpg";
 import heroBusinessImage from "@/assets/hero-business.jpg";
 import heroWorldImage from "@/assets/hero-world.jpg";
@@ -15,7 +18,7 @@ import dsnlOriginalImage from "@/assets/dsnl-original.jpg";
 
 export const HomePage = () => {
   const navigate = useNavigate();
-  
+
   // Modal state for story details
   const [selectedStory, setSelectedStory] = useState<{
     title: string;
@@ -27,17 +30,22 @@ export const HomePage = () => {
     link: string;
   } | null>(null);
   const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
-  
+
   // Fetch real news data
   const { data: trendingStories, isLoading: trendingLoading, error: trendingError } = useTrendingStories();
   const { data: moreStories, isLoading: moreLoading } = useNewsByCategory('World News');
   const { data: businessStories } = useNewsByCategory('Business');
   const { data: techStories } = useNewsByCategory('Technology');
+  const { data: articlePosts } = useQuery<BlogPost[]>({
+    queryKey: ['blogger-posts'],
+    queryFn: () => bloggerService.getPosts(),
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     let ticking = false;
     let isCompact = false;
-    
+
     const handleScroll = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
@@ -46,21 +54,21 @@ export const HomePage = () => {
           const categoriesGrid = document.getElementById('categories-grid');
           const categoryCounts = document.querySelectorAll('.category-count');
           const categoryCards = document.querySelectorAll('.category-card');
-          
+
           if (!categoriesSection) {
             ticking = false;
             return;
           }
-          
+
           const scrollY = window.scrollY;
           const bannerHeight = 350; // Slightly reduced for earlier transition
           const shouldBeCompact = scrollY > bannerHeight;
-          
+
           // Only apply changes if state actually changed
           if (shouldBeCompact !== isCompact) {
             isCompact = shouldBeCompact;
             const isMobile = window.innerWidth < 768;
-            
+
             if (shouldBeCompact) {
               // Compact mode - add CSS classes instead of inline styles for smoother transitions
               categoriesSection.classList.add('compact-mode');
@@ -70,7 +78,7 @@ export const HomePage = () => {
                 min-height: 0;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
               `;
-              
+
               if (categoriesTitle) {
                 categoriesTitle.style.cssText = `
                   opacity: 0;
@@ -84,7 +92,7 @@ export const HomePage = () => {
                   }
                 }, 200);
               }
-              
+
               if (categoriesGrid) {
                 categoriesGrid.style.cssText = `
                   display: flex;
@@ -99,7 +107,7 @@ export const HomePage = () => {
                   -webkit-overflow-scrolling: touch;
                 `;
               }
-              
+
               categoryCards.forEach((card, index) => {
                 setTimeout(() => {
                   if (!isCompact) return; // Check if still should be compact
@@ -117,7 +125,7 @@ export const HomePage = () => {
                   `;
                 }, index * 20); // Stagger the animation
               });
-              
+
               categoryCounts.forEach((count, index) => {
                 setTimeout(() => {
                   count.style.cssText = `
@@ -130,7 +138,7 @@ export const HomePage = () => {
                   }, 150);
                 }, index * 10);
               });
-              
+
               const categoryNames = document.querySelectorAll('.category-name');
               categoryNames.forEach((name, index) => {
                 setTimeout(() => {
@@ -153,7 +161,7 @@ export const HomePage = () => {
                 min-height: auto;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
               `;
-              
+
               if (categoriesTitle) {
                 categoriesTitle.style.display = 'block';
                 setTimeout(() => {
@@ -167,7 +175,7 @@ export const HomePage = () => {
                   }
                 }, 50);
               }
-              
+
               if (categoriesGrid) {
                 categoriesGrid.style.cssText = `
                   display: grid;
@@ -180,7 +188,7 @@ export const HomePage = () => {
                   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 `;
               }
-              
+
               categoryCards.forEach((card, index) => {
                 setTimeout(() => {
                   if (isCompact) return;
@@ -195,7 +203,7 @@ export const HomePage = () => {
                   }, 200);
                 }, index * 15);
               });
-              
+
               categoryCounts.forEach((count, index) => {
                 setTimeout(() => {
                   if (isCompact) return;
@@ -210,7 +218,7 @@ export const HomePage = () => {
                   }, 200);
                 }, index * 10);
               });
-              
+
               const categoryNames = document.querySelectorAll('.category-name');
               categoryNames.forEach((name, index) => {
                 setTimeout(() => {
@@ -225,17 +233,17 @@ export const HomePage = () => {
               });
             }
           }
-          
+
           ticking = false;
         });
         ticking = true;
       }
     };
-    
+
     // Use passive listener for better performance
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Run once on mount
-    
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -256,6 +264,9 @@ export const HomePage = () => {
     ...(businessStories || []).slice(0, 2),
     ...(techStories || []).slice(0, 1)
   ];
+  const topArticlePosts = [...(articlePosts || [])]
+    .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
+    .slice(0, 3);
 
   const exploreCategories = [
     { name: "Trending Stories", icon: TrendingUp, count: trendingStories?.length || 0, color: "bg-red-500" },
@@ -266,6 +277,7 @@ export const HomePage = () => {
     { name: "Politics", icon: Users, count: 567, color: "bg-pink-500" },
     { name: "Entertainment", icon: Gamepad2, count: 432, color: "bg-indigo-500" },
     { name: "Sports", icon: Trophy, count: 389, color: "bg-yellow-500" },
+    { name: "DSNL Dialouge", icon: Zap, count: articlePosts?.length || 0, color: "bg-slate-500" },
     { name: "DSNL TV", icon: Tv, count: 298, color: "bg-teal-500" }
   ];
 
@@ -282,9 +294,22 @@ export const HomePage = () => {
       navigate('/dsnl-tv');
       return;
     }
-    
+
+    if (categoryName === 'DSNL Dialouge') {
+      navigate('/Blogs');
+      return;
+    }
+
     const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-');
     navigate(`/category/${categorySlug}`);
+  };
+
+  const handleArticleClick = (postId: string) => {
+    navigate(`/Blogs/${postId}`);
+  };
+
+  const handleViewAllArticles = () => {
+    navigate('/Blogs');
   };
 
   // Handle story click - open modal instead of direct link
@@ -310,7 +335,7 @@ export const HomePage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Inspirational Banner */}
       <section className="bg-white">
         <div className="container mx-auto px-4 py-16 md:py-20 lg:py-24 text-center">
@@ -326,18 +351,18 @@ export const HomePage = () => {
           </p>
         </div>
       </section>
-      
+
       {/* Explore by Category Section */}
       <section id="categories-section" className="sticky top-16 z-40 bg-background py-6 border-b border-border/30 transition-all duration-300">
         <div className="container mx-auto px-4">
           <h2 id="categories-title" className="font-display text-xl md:text-2xl font-bold text-headline mb-6 transition-all duration-300">
             Explore by Category
           </h2>
-          
+
           <div id="categories-grid" className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 transition-all duration-300">
             {exploreCategories.map((category) => (
-              <div 
-                key={category.name} 
+              <div
+                key={category.name}
                 className="magazine-card p-4 cursor-pointer text-center category-card hover:bg-accent/50 transition-colors"
                 onClick={() => handleCategoryClick(category.name)}
                 role="button"
@@ -358,7 +383,7 @@ export const HomePage = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Hero Section */}
       <section className="bg-card">
         <div className="container mx-auto px-4 py-8">
@@ -383,8 +408,8 @@ export const HomePage = () => {
               // Error state
               <div className="col-span-full text-center py-12">
                 <p className="text-body mb-4">Unable to load latest news. Please try again later.</p>
-                <button 
-                  onClick={() => window.location.reload()} 
+                <button
+                  onClick={() => window.location.reload()}
                   className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
                 >
                   Retry
@@ -397,9 +422,9 @@ export const HomePage = () => {
                   key={`${story.source}-${index}`}
                   {...story}
                   variant={
-                    index === 0 ? 'hero' : 
-                    index === 1 ? 'large' :
-                    'medium'
+                    index === 0 ? 'hero' :
+                      index === 1 ? 'large' :
+                        'medium'
                   }
                   onStoryClick={handleStoryClick}
                 />
@@ -415,6 +440,125 @@ export const HomePage = () => {
         </div>
       </section>
 
+      {/* DSNL Dialouge Top Articles Section */}
+      <section className="py-12 bg-premium-accent/20 border-b border-border/40">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <BookOpen className="text-primary-foreground" size={20} />
+              </div>
+              <div>
+                <h2 className="font-display text-2xl md:text-3xl font-bold text-headline">
+                  DSNL Dialouge
+                </h2>
+                <p className="text-body text-sm md:text-base">
+                  Latest insights and expert perspectives from our editorial desk
+                </p>
+              </div>
+            </div>
+
+            <Badge className="hidden md:flex items-center space-x-2 bg-primary/10 text-primary border-primary/20">
+              <BookOpen size={14} />
+              <span>Top 3 Articles</span>
+            </Badge>
+          </div>
+
+          {!articlePosts && (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-metadata">Loading latest articles...</p>
+              </div>
+            </div>
+          )}
+
+          {articlePosts && topArticlePosts.length === 0 && (
+            <div className="magazine-card max-w-md mx-auto">
+              <div className="flex flex-col items-center text-center p-8">
+                <BookOpen className="h-12 w-12 text-metadata mb-4" />
+                <h3 className="font-display text-lg font-bold text-headline mb-2">
+                  No Articles Yet
+                </h3>
+                <p className="text-body text-sm mb-4">
+                  New DSNL Dialouge articles will appear here once they are published.
+                </p>
+                <Button onClick={handleViewAllArticles} className="bg-primary hover:bg-primary/90">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View All Articles
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {topArticlePosts.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {topArticlePosts.map((post) => (
+                <article
+                  key={post.id}
+                  onClick={() => handleArticleClick(post.id)}
+                  className="group cursor-pointer bg-card border border-border/30 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col"
+                >
+                  <div className="relative overflow-hidden aspect-[16/9] bg-muted">
+                    {post.thumbnail ? (
+                      <img
+                        src={post.thumbnail}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/20">
+                        <BookOpen size={48} className="text-primary/30" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-center gap-1.5 text-metadata text-xs mb-3">
+                      <Calendar size={12} />
+                      <span>{bloggerService.formatDate(post.published)}</span>
+                    </div>
+
+                    <h3 className="font-display text-base font-semibold text-headline leading-snug mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-body text-sm leading-relaxed line-clamp-3 flex-1">
+                      {post.excerpt}
+                    </p>
+
+                    <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-between">
+                      <span className="text-xs text-metadata">
+                        {post.categories[0] || 'Article'}
+                      </span>
+                      <span className="flex items-center gap-1 text-primary text-xs font-semibold group-hover:gap-2 transition-all duration-200">
+                        Read Article <ChevronRight size={12} />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {topArticlePosts.length > 0 && (
+            <div className="text-center mt-8">
+              <p className="text-body mb-4">
+                Read more insights from DSNL Dialouge
+              </p>
+              <Button
+                onClick={handleViewAllArticles}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                View All Articles
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* DSNL Originals Section */}
       <DSNLOriginalsSection />
 
@@ -424,7 +568,7 @@ export const HomePage = () => {
           <h2 className="font-display text-2xl md:text-3xl font-bold text-headline mb-8">
             More Stories
           </h2>
-          
+
           {/* Desktop: Two-column layout with main content and sidebar */}
           <div className="lg:flex lg:gap-8">
             {/* Main Content Area - Desktop */}
@@ -451,19 +595,19 @@ export const HomePage = () => {
                 ))}
               </div>
             </div>
-            
+
             {/* Sidebar - Desktop Only */}
             <div className="lg:w-1/3">
               <div className="sticky top-24">
                 {/* Founder's Vision Section */}
                 <FounderSection />
-                
+
                 <h3 className="font-display text-lg font-bold text-headline mb-4 border-b border-border pb-2">
                   Latest Updates
                 </h3>
                 <div className="space-y-4">
                   {combinedMoreStories.slice(4, 8).map((story: any, index) => (
-                    <div 
+                    <div
                       key={`sidebar-${story.source}-${index}`}
                       className="flex gap-3 p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
                       onClick={() => handleStoryClick({
@@ -476,8 +620,8 @@ export const HomePage = () => {
                         link: story.link
                       })}
                     >
-                      <img 
-                        src={story.imageUrl || heroWorldImage} 
+                      <img
+                        src={story.imageUrl || heroWorldImage}
                         alt={story.title}
                         className="w-20 h-16 object-cover rounded-md flex-shrink-0"
                       />
@@ -495,7 +639,7 @@ export const HomePage = () => {
                     </div>
                   ))}
                 </div>
-                
+
                 {/* Trending Topics Widget */}
                 <div className="mt-8 p-4 bg-accent/20 rounded-lg">
                   <h4 className="font-display text-md font-bold text-headline mb-3">
@@ -512,7 +656,7 @@ export const HomePage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Mobile: Single column layout */}
           <div className="lg:hidden grid grid-cols-1 gap-4">
             {combinedMoreStories.slice(4).map((story: any, index) => (
@@ -547,7 +691,7 @@ export const HomePage = () => {
                 Experience journalism reimagined.
               </p>
             </div>
-            
+
             {/* Content */}
             <div>
               <h4 className="font-semibold text-headline mb-4">Content</h4>
@@ -561,7 +705,7 @@ export const HomePage = () => {
                 <li><a href="/dsnl-tv" className="hover:text-primary transition-colors">DSNL TV</a></li>
               </ul>
             </div>
-            
+
             {/* Company */}
             <div>
               <h4 className="font-semibold text-headline mb-4">Company</h4>
@@ -572,7 +716,7 @@ export const HomePage = () => {
                 <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
               </ul>
             </div>
-            
+
             {/* Subscribe */}
             <div>
               <h4 className="font-semibold text-headline mb-4">Subscribe</h4>
@@ -591,7 +735,7 @@ export const HomePage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Bottom Section */}
           <div className="border-t border-border pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
@@ -607,9 +751,9 @@ export const HomePage = () => {
           </div>
         </div>
       </footer>
-      
+
       {/* Story Detail Modal */}
-      <StoryModal 
+      <StoryModal
         isOpen={isStoryModalOpen}
         onClose={handleCloseStoryModal}
         story={selectedStory}

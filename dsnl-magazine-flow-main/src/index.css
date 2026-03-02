@@ -221,6 +221,24 @@ All colors MUST be HSL for proper theming.
     background: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
   }
 
+  /* Blogger Content Styling - Restores default browser styles */
+  .blogger-content {
+    /* Ensure colors adapt softly if needed, but allow Blogger's explicit colors */
+    @apply text-foreground font-sans;
+  }
+  
+  .blogger-content * {
+    /* Revert Tailwind's preflight resets to let standard HTML tags look as intended */
+    all: revert;
+  }
+  
+  .blogger-content img {
+    /* Ensure images remain responsive and fit their containers */
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+
   /* Interactive Elements */
   .interactive-hover {
     @apply transition-all duration-200 hover:bg-hover-accent;

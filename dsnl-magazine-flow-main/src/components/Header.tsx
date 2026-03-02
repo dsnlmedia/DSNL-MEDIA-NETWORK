@@ -1,4 +1,4 @@
-import { Search, User, Menu, Mail, Edit3, FileText, UserCheck, X } from "lucide-react";
+import { Search, User, Menu, Mail, Edit3, BookOpen, UserCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NewsletterModal } from "./NewsletterModal";
@@ -24,8 +24,8 @@ export const Header = () => {
     setIsMobileMenuOpen(false); // Close mobile menu on navigation
   };
 
-  const handleArticlesClick = () => {
-    navigate('/articles');
+  const handleBlogsClick = () => {
+    navigate('/Blogs');
     setIsMobileMenuOpen(false);
   };
 
@@ -81,10 +81,10 @@ export const Header = () => {
           {/* DSNL Media Network Logo */}
           <div className="flex items-center space-x-2">
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-              <img 
-                src={dsnlLogo} 
-                alt="DSNL Media Network" 
-                className="h-10 w-auto mr-3 object-contain rounded-lg" 
+              <img
+                src={dsnlLogo}
+                alt="DSNL Media Network"
+                className="h-10 w-auto mr-3 object-contain rounded-lg"
               />
               <h1 className="font-display text-xl font-semibold text-headline">
                 DSNL Media Network
@@ -95,45 +95,45 @@ export const Header = () => {
           {/* Search and User Actions */}
           <div className="flex items-center space-x-4">
             {/* Founder's Vision Button - Premium Magazine Style */}
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="hidden md:flex items-center space-x-2 px-4 py-2 rounded-lg font-display text-sm font-semibold text-body hover:text-headline hover:bg-accent/30 transition-all duration-300 border border-transparent hover:border-primary/20 hover:shadow-sm"
               onClick={handleFounderClick}
             >
               <UserCheck size={16} className="text-primary" />
               <span className="tracking-wide">Founder's Vision</span>
             </Button>
-            
+
             {/* Editor Speaks Button - Premium Magazine Style */}
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="hidden md:flex items-center space-x-2 px-4 py-2 rounded-lg font-display text-sm font-semibold text-body hover:text-headline hover:bg-accent/30 transition-all duration-300 border border-transparent hover:border-primary/20 hover:shadow-sm"
               onClick={handleEditorialSpeaksClick}
             >
               <Edit3 size={16} className="text-primary" />
               <span className="tracking-wide">Editor Speaks</span>
             </Button>
-            
-            {/* Articles Button - Premium Magazine Style */}
-            <Button 
-              variant="ghost" 
+
+            {/* Blogs Button - Premium Magazine Style */}
+            <Button
+              variant="ghost"
               className="hidden md:flex items-center space-x-2 px-4 py-2 rounded-lg font-display text-sm font-semibold text-body hover:text-headline hover:bg-accent/30 transition-all duration-300 border border-transparent hover:border-primary/20 hover:shadow-sm"
-              onClick={handleArticlesClick}
+              onClick={handleBlogsClick}
             >
-              <FileText size={16} className="text-primary" />
+              <BookOpen size={16} className="text-primary" />
               <span className="tracking-wide">Articles</span>
             </Button>
-            
+
             {/* Newsletters Button - Premium Magazine Style */}
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="hidden md:flex items-center space-x-2 px-4 py-2 rounded-lg font-display text-sm font-semibold text-body hover:text-headline hover:bg-accent/30 transition-all duration-300 border border-transparent hover:border-primary/20 hover:shadow-sm"
               onClick={handleNewsletterClick}
             >
               <Mail size={16} className="text-primary" />
               <span className="tracking-wide">Newsletters</span>
             </Button>
-            
+
             {/* Search Bar */}
             <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
@@ -149,9 +149,9 @@ export const Header = () => {
             </Button>
 
             {/* Mobile Menu */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="md:hidden text-body hover:text-headline"
               onClick={handleMobileMenuToggle}
             >
@@ -160,31 +160,31 @@ export const Header = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-fade-in"
             onClick={() => setIsMobileMenuOpen(false)}
           />
-          
+
           {/* Mobile Menu Drawer */}
           <div className="absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-card border-l border-border/30 shadow-2xl mobile-menu-enter">
             {/* Menu Header */}
             <div className="flex items-center justify-between p-4 border-b border-border/30">
               <h2 className="font-display text-lg font-semibold text-headline">Menu</h2>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-body hover:text-headline"
               >
                 <X size={18} />
               </Button>
             </div>
-            
+
             {/* Menu Content */}
             <div className="p-4 space-y-2">
               {/* Search Bar */}
@@ -197,38 +197,38 @@ export const Header = () => {
                   />
                 </div>
               </div>
-              
+
               {/* Navigation Items */}
               <div className="space-y-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="w-full justify-start text-left p-4 h-auto text-body hover:text-headline hover:bg-accent/50"
                   onClick={handleFounderClick}
                 >
                   <UserCheck size={18} className="mr-3 text-primary" />
                   <span className="text-base">Founder's Vision</span>
                 </Button>
-                
-                <Button 
-                  variant="ghost" 
+
+                <Button
+                  variant="ghost"
                   className="w-full justify-start text-left p-4 h-auto text-body hover:text-headline hover:bg-accent/50"
                   onClick={handleEditorialSpeaksClick}
                 >
                   <Edit3 size={18} className="mr-3 text-primary" />
                   <span className="text-base">Editor Speaks</span>
                 </Button>
-                
-                <Button 
-                  variant="ghost" 
+
+                <Button
+                  variant="ghost"
                   className="w-full justify-start text-left p-4 h-auto text-body hover:text-headline hover:bg-accent/50"
-                  onClick={handleArticlesClick}
+                  onClick={handleBlogsClick}
                 >
-                  <FileText size={18} className="mr-3 text-primary" />
+                  <BookOpen size={18} className="mr-3 text-primary" />
                   <span className="text-base">Articles</span>
                 </Button>
-                
-                <Button 
-                  variant="ghost" 
+
+                <Button
+                  variant="ghost"
                   className="w-full justify-start text-left p-4 h-auto text-body hover:text-headline hover:bg-accent/50"
                   onClick={handleMobileNewsletterClick}
                 >
@@ -236,13 +236,13 @@ export const Header = () => {
                   <span className="text-base">Newsletters</span>
                 </Button>
               </div>
-              
+
               {/* Divider */}
               <div className="border-t border-border/30 my-4" />
-              
+
               {/* User Profile */}
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="w-full justify-start text-left p-4 h-auto text-body hover:text-headline hover:bg-accent/50"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -253,9 +253,9 @@ export const Header = () => {
           </div>
         </div>
       )}
-      
+
       {/* Newsletter Subscription Modal */}
-      <NewsletterModal 
+      <NewsletterModal
         isOpen={isNewsletterModalOpen}
         onClose={handleCloseNewsletterModal}
       />

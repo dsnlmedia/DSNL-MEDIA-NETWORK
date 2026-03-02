@@ -8,9 +8,8 @@ import NotFound from "./pages/NotFound";
 import { CategoryPage } from "./components/CategoryPage";
 import { DSNLTVPage } from "./components/DSNLTVPage";
 import { FounderPage } from "./components/FounderPage";
-import ArticlesPage from "./pages/ArticlesPage";
-import ArticleDetailPage from "./pages/ArticleDetailPage";
-import EditorialSpeaksPage from "./pages/EditorialSpeaksPage";
+import BlogsPage from "./pages/BlogsPage";
+import BlogDetailPage from "./pages/BlogDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -25,10 +24,8 @@ const App = () => (
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/dsnl-tv" element={<DSNLTVPage />} />
           <Route path="/founder" element={<FounderPage />} />
-          <Route path="/articles" element={<ArticlesPage />} />
-          <Route path="/articles/:id" element={<ArticleDetailPage />} />
-          <Route path="/editorial-speaks" element={<EditorialSpeaksPage />} />
-          <Route path="/editorial-speaks/:id" element={<ArticleDetailPage />} />
+          <Route path="/Blogs" element={<BlogsPage />} />
+          <Route path="/Blogs/:postId" element={<BlogDetailPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
