@@ -296,7 +296,7 @@ export const HomePage = () => {
     }
 
     if (categoryName === 'DSNL Dialouge') {
-      navigate('/Blogs');
+      navigate('/blogs');
       return;
     }
 
@@ -305,11 +305,11 @@ export const HomePage = () => {
   };
 
   const handleArticleClick = (postId: string) => {
-    navigate(`/Blogs/${postId}`);
+    navigate(`/blogs/${postId}`);
   };
 
   const handleViewAllArticles = () => {
-    navigate('/Blogs');
+    navigate('/blogs');
   };
 
   // Handle story click - open modal instead of direct link

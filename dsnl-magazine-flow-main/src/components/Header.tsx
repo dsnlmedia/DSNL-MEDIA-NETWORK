@@ -25,7 +25,7 @@ export const Header = () => {
   };
 
   const handleBlogsClick = () => {
-    navigate('/Blogs');
+    navigate('/blogs');
     setIsMobileMenuOpen(false);
   };
 

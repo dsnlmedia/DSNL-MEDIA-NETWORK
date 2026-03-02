@@ -24,8 +24,8 @@ const App = () => (
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/dsnl-tv" element={<DSNLTVPage />} />
           <Route path="/founder" element={<FounderPage />} />
-          <Route path="/Blogs" element={<BlogsPage />} />
-          <Route path="/Blogs/:postId" element={<BlogDetailPage />} />
+          <Route path="/blogs" element={<BlogsPage />} />
+          <Route path="/blogs/:postId" element={<BlogDetailPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
