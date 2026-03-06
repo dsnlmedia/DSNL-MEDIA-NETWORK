@@ -1,38 +1,9 @@
-// Newsletter Service — fetches posts from dsnlmedia-news.blogspot.com
+﻿// Newsletter Service
+// Fetches all public posts from DSNL newsletter Blogger feed using paginated calls.
 
-const NEWSLETTER_BASE = 'https://dsnlmedia-news.blogspot.com/feeds/posts/default';
+const NEWSLETTER_FEED_URL = 'https://dsnlmedia-news.blogspot.com/feeds/posts/default';
 const MAX_PER_PAGE = 50;
-
-function buildUrl(startIndex: number): { vite: string; cors: string } {
-    const params = `alt=json&max-results=${MAX_PER_PAGE}&start-index=${startIndex}`;
-    const direct = `${NEWSLETTER_BASE}?${params}`;
-    return {
-        vite: `/dsnl-news-feed?${params}`,
-        cors: `https://corsproxy.io/?${encodeURIComponent(direct)}`,
-    };
-}
-
-async function fetchPage(startIndex: number): Promise<Response> {
-    const { vite, cors } = buildUrl(startIndex);
-
-    // Try Vite dev proxy first
-    try {
-        const res = await fetch(vite, { signal: AbortSignal.timeout(4000) });
-        if (res.ok) {
-            const ct = res.headers.get('content-type') ?? '';
-            if (ct.includes('json') || ct.includes('javascript') || ct.includes('text/plain')) {
-                return res;
-            }
-        }
-    } catch {
-        // Vite proxy not ready or SPA HTML fallback — fall through
-    }
-
-    // Fallback: corsproxy.io
-    const res = await fetch(cors);
-    if (!res.ok) throw new Error(`Newsletter feed request failed: ${res.status}`);
-    return res;
-}
+const JSONP_TIMEOUT_MS = 12000;
 
 export interface NewsletterPost {
     id: string;
@@ -66,9 +37,102 @@ interface BloggerFeed {
     };
 }
 
+function buildProxyUrl(startIndex: number): string {
+    const params = new URLSearchParams({
+        alt: 'json',
+        'max-results': String(MAX_PER_PAGE),
+        'start-index': String(startIndex),
+    });
+    return `/dsnl-news-feed?${params.toString()}`;
+}
+
+function buildJsonpUrl(startIndex: number, callbackName: string): string {
+    const params = new URLSearchParams({
+        alt: 'json-in-script',
+        callback: callbackName,
+        'max-results': String(MAX_PER_PAGE),
+        'start-index': String(startIndex),
+    });
+    return `${NEWSLETTER_FEED_URL}?${params.toString()}`;
+}
+
+async function fetchViaDevProxy(startIndex: number): Promise<BloggerFeed | null> {
+    const isLocalHost =
+        typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+    if (!isLocalHost) return null;
+
+    try {
+        const res = await fetch(buildProxyUrl(startIndex), { signal: AbortSignal.timeout(4000) });
+        if (!res.ok) return null;
+
+        const contentType = res.headers.get('content-type') ?? '';
+        const looksLikeJson =
+            contentType.includes('json') ||
+            contentType.includes('javascript') ||
+            contentType.includes('text/plain');
+
+        if (!looksLikeJson) return null;
+        return (await res.json()) as BloggerFeed;
+    } catch {
+        return null;
+    }
+}
+
+function fetchViaJsonp(startIndex: number): Promise<BloggerFeed> {
+    return new Promise((resolve, reject) => {
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            reject(new Error('Newsletter feed is unavailable in this environment'));
+            return;
+        }
+
+        const callbackName = `__dsnlNewsletterFeed_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement('script');
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+        const cleanup = () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            const globalWindow = window as unknown as Record<string, unknown>;
+            delete globalWindow[callbackName];
+            script.remove();
+        };
+
+        const globalWindow = window as unknown as Record<string, unknown>;
+        globalWindow[callbackName] = (data: BloggerFeed) => {
+            cleanup();
+            if (!data?.feed) {
+                reject(new Error('Invalid newsletter feed response'));
+                return;
+            }
+            resolve(data);
+        };
+
+        script.src = buildJsonpUrl(startIndex, callbackName);
+        script.async = true;
+        script.onerror = () => {
+            cleanup();
+            reject(new Error('Newsletter feed request failed'));
+        };
+
+        timeoutId = setTimeout(() => {
+            cleanup();
+            reject(new Error('Newsletter feed request timed out'));
+        }, JSONP_TIMEOUT_MS);
+
+        document.head.appendChild(script);
+    });
+}
+
+async function fetchPage(startIndex: number): Promise<BloggerFeed> {
+    const proxyData = await fetchViaDevProxy(startIndex);
+    if (proxyData) return proxyData;
+    return fetchViaJsonp(startIndex);
+}
+
 function extractExcerpt(html: string, maxLength = 200): string {
     const text = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
-    return text.length <= maxLength ? text : text.substring(0, maxLength).trimEnd() + '…';
+    return text.length <= maxLength ? text : `${text.substring(0, maxLength).trimEnd()}...`;
 }
 
 function extractPostId(rawId: string): string {
@@ -92,7 +156,7 @@ function parseEntry(entry: BloggerFeedEntry): NewsletterPost {
         thumbnail,
         postUrl: alternateLink?.href ?? '',
         author: entry.author?.[0]?.name?.$t ?? 'DSNL Media',
-        categories: (entry.category ?? []).map((c: { term: string }) => c.term),
+        categories: (entry.category ?? []).map((c) => c.term),
     };
 }
 
@@ -107,8 +171,7 @@ class NewsletterService {
         let totalResults = Infinity;
 
         while (allPosts.length < totalResults) {
-            const response = await fetchPage(startIndex);
-            const data: BloggerFeed = await response.json();
+            const data = await fetchPage(startIndex);
 
             if (startIndex === 1) {
                 totalResults = parseInt(data.feed?.openSearch$totalResults?.$t ?? '0', 10);
