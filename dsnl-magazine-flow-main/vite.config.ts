@@ -15,6 +15,12 @@ export default defineConfig(({ mode }) => ({
         rewrite: (path) => path.replace(/^\/blogger-feed/, '/feeds/posts/default'),
         secure: true,
       },
+      '/dsnl-news-feed': {
+        target: 'https://dsnlmedia-news.blogspot.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/dsnl-news-feed/, '/feeds/posts/default'),
+        secure: true,
+      },
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),

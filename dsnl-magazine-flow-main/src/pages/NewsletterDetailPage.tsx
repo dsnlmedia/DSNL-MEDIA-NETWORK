@@ -1,17 +1,17 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { bloggerService, BlogPost } from '@/services/bloggerService';
 import { Header } from '@/components/Header';
+import { newsletterService, NewsletterPost } from '@/services/newsletterService';
 import { ArrowLeft, Calendar, User, Tag, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function BlogDetailPage() {
+export default function NewsletterDetailPage() {
     const { postId } = useParams<{ postId: string }>();
     const navigate = useNavigate();
 
-    const { data: post, isLoading, isError } = useQuery<BlogPost | null>({
-        queryKey: ['blogger-post', postId],
-        queryFn: () => bloggerService.getPostById(postId ?? ''),
+    const { data: post, isLoading, isError } = useQuery<NewsletterPost | null>({
+        queryKey: ['dsnl-newsletter', postId],
+        queryFn: () => newsletterService.getPostById(postId ?? ''),
         staleTime: 5 * 60 * 1000,
         enabled: !!postId,
     });
@@ -22,7 +22,7 @@ export default function BlogDetailPage() {
                 <Header />
                 <div className="flex flex-col items-center justify-center py-32 gap-4">
                     <Loader2 size={40} className="text-primary animate-spin" />
-                    <p className="text-body text-lg">Loading article…</p>
+                    <p className="text-body text-lg">Loading newsletter…</p>
                 </div>
             </div>
         );
@@ -34,9 +34,9 @@ export default function BlogDetailPage() {
                 <Header />
                 <div className="flex flex-col items-center justify-center py-32 gap-4">
                     <AlertCircle size={40} className="text-destructive" />
-                    <p className="text-headline text-lg font-semibold">Article not found</p>
-                    <Button variant="ghost" onClick={() => navigate('/blogs')} className="mt-2">
-                        <ArrowLeft size={16} className="mr-2" /> Back to Blogs
+                    <p className="text-headline text-lg font-semibold">Newsletter not found</p>
+                    <Button variant="ghost" onClick={() => navigate('/newsletter')} className="mt-2">
+                        <ArrowLeft size={16} className="mr-2" /> Back to Newsletters
                     </Button>
                 </div>
             </div>
@@ -51,13 +51,12 @@ export default function BlogDetailPage() {
                 {/* Back button */}
                 <Button
                     variant="ghost"
-                    onClick={() => navigate('/blogs')}
+                    onClick={() => navigate('/newsletter')}
                     className="mb-8 text-body hover:text-headline -ml-2"
                 >
                     <ArrowLeft size={16} className="mr-2" />
-                    Back to Blogs
+                    Back to Newsletters
                 </Button>
-
 
 
                 {/* Title */}
@@ -73,20 +72,26 @@ export default function BlogDetailPage() {
                     </span>
                     <span className="flex items-center gap-1.5">
                         <Calendar size={14} />
-                        {bloggerService.formatDate(post.published)}
+                        {newsletterService.formatDate(post.published)}
                     </span>
                 </div>
 
-                {/* Full Blog Content */}
+                {/* Full Content */}
                 <article
-                    className="blogger-content w-full overflow-hidden [&_img]:mx-auto [&_img]:block [&_.separator]:text-center [&_table]:mx-auto"
+                    className="prose prose-neutral dark:prose-invert max-w-none
+                     prose-headings:font-display prose-headings:text-headline
+                     prose-p:text-body prose-p:leading-relaxed
+                     prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                     prose-img:rounded-xl prose-img:mx-auto prose-img:block prose-img:text-center
+                     prose-strong:text-headline
+                     prose-li:text-body [&_img]:mx-auto [&_img]:block [&_.separator]:text-center"
                     dangerouslySetInnerHTML={{ __html: post.content }}
                 />
 
                 {/* Footer: tags + back button */}
                 <div className="mt-12 pt-8 border-t border-border/30 space-y-5">
                     {/* Category Tags */}
-                    {post.categories.length > 0 && (
+                    {post.categories && post.categories.length > 0 && (
                         <div className="flex flex-wrap gap-2">
                             {post.categories.map((cat) => (
                                 <span
@@ -101,11 +106,11 @@ export default function BlogDetailPage() {
                     )}
                     <Button
                         variant="outline"
-                        onClick={() => navigate('/blogs')}
+                        onClick={() => navigate('/newsletter')}
                         className="border-primary/30 text-primary hover:bg-primary/10"
                     >
                         <ArrowLeft size={16} className="mr-2" />
-                        Back to Blogs
+                        Back to Newsletters
                     </Button>
                 </div>
             </main>

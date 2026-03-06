@@ -1,16 +1,16 @@
 ﻿import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { bloggerService, BlogPost } from '@/services/bloggerService';
 import { Header } from '@/components/Header';
-import { BookOpen, Calendar, Tag, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { newsletterService, NewsletterPost } from '@/services/newsletterService';
+import { Newspaper, Calendar, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 
-export default function BlogsPage() {
+export default function NewsletterPage() {
     const navigate = useNavigate();
 
-    const { data: posts, isLoading, isError, error } = useQuery<BlogPost[]>({
-        queryKey: ['blogger-posts'],
-        queryFn: () => bloggerService.getPosts(),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+    const { data: posts, isLoading, isError, error } = useQuery<NewsletterPost[]>({
+        queryKey: ['dsnl-newsletters'],
+        queryFn: () => newsletterService.getPosts(),
+        staleTime: 5 * 60 * 1000,
     });
 
     return (
@@ -22,14 +22,14 @@ export default function BlogsPage() {
                 {isLoading && (
                     <div className="flex flex-col items-center justify-center py-24 gap-4">
                         <Loader2 size={40} className="text-primary animate-spin" />
-                        <p className="text-body text-lg">Loading blogsâ€¦</p>
+                        <p className="text-body text-lg">Loading newslettersâ€¦</p>
                     </div>
                 )}
 
                 {isError && (
                     <div className="flex flex-col items-center justify-center py-24 gap-4">
                         <AlertCircle size={40} className="text-destructive" />
-                        <p className="text-headline text-lg font-semibold">Failed to load blogs</p>
+                        <p className="text-headline text-lg font-semibold">Failed to load newsletters</p>
                         <p className="text-metadata text-sm">
                             {(error as Error)?.message ?? 'Please check your internet connection and try again.'}
                         </p>
@@ -39,7 +39,11 @@ export default function BlogsPage() {
                 {posts && posts.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {posts.map((post) => (
-                            <BlogCard key={post.id} post={post} onClick={() => navigate(`/blogs/${post.id}`)} />
+                            <NewsletterCard
+                                key={post.id}
+                                post={post}
+                                onClick={() => navigate(`/newsletter/${post.id}`)}
+                            />
                         ))}
                     </div>
                 )}
@@ -48,14 +52,13 @@ export default function BlogsPage() {
     );
 }
 
-interface BlogCardProps {
-    post: BlogPost;
+interface NewsletterCardProps {
+    post: NewsletterPost;
     onClick: () => void;
 }
 
-function BlogCard({ post, onClick }: BlogCardProps) {
-    const date = bloggerService.formatDate(post.published);
-    const topCategories = post.categories.slice(0, 3);
+function NewsletterCard({ post, onClick }: NewsletterCardProps) {
+    const date = newsletterService.formatDate(post.published);
 
     return (
         <article
@@ -75,15 +78,13 @@ function BlogCard({ post, onClick }: BlogCardProps) {
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/20">
-                        <BookOpen size={48} className="text-primary/30" />
+                        <Newspaper size={48} className="text-primary/30" />
                     </div>
                 )}
-                {/* Category pill overlay */}
-                {topCategories[0] && (
-                    <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm">
-                        {topCategories[0]}
-                    </span>
-                )}
+                {/* Edition pill */}
+                <span className="absolute top-3 left-3 bg-primary/90 text-primary-foreground text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm">
+                    Newsletter
+                </span>
             </div>
 
             {/* Body */}
@@ -106,21 +107,8 @@ function BlogCard({ post, onClick }: BlogCardProps) {
                 </p>
 
                 {/* Footer */}
-                <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-between gap-2">
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1">
-                        {topCategories.slice(1).map((tag) => (
-                            <span
-                                key={tag}
-                                className="inline-flex items-center gap-1 text-[10px] text-metadata bg-muted/60 rounded-full px-2 py-0.5"
-                            >
-                                <Tag size={8} />
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-                    {/* Read more */}
-                    <span className="flex-shrink-0 flex items-center gap-1 text-primary text-xs font-semibold
+                <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-end">
+                    <span className="flex items-center gap-1 text-primary text-xs font-semibold
                            group-hover:gap-2 transition-all duration-200">
                         Read <ArrowRight size={12} />
                     </span>

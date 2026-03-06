@@ -1,22 +1,18 @@
 import { Search, User, Menu, Mail, Edit3, BookOpen, UserCheck, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { NewsletterModal } from "./NewsletterModal";
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dsnlLogo from "@/assets/dsnl-logo.png";
 
 export const Header = () => {
   const navigate = useNavigate();
-  const [isNewsletterModalOpen, setIsNewsletterModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNewsletterClick = () => {
-    setIsNewsletterModalOpen(true);
-  };
-
-  const handleCloseNewsletterModal = () => {
-    setIsNewsletterModalOpen(false);
+    navigate('/newsletter');
+    setIsMobileMenuOpen(false);
   };
 
   const handleFounderClick = () => {
@@ -40,7 +36,6 @@ export const Header = () => {
 
   const handleMobileNewsletterClick = () => {
     handleNewsletterClick();
-    setIsMobileMenuOpen(false); // Close mobile menu
   };
 
   // Close mobile menu on escape key or when clicking outside
@@ -254,11 +249,7 @@ export const Header = () => {
         </div>
       )}
 
-      {/* Newsletter Subscription Modal */}
-      <NewsletterModal
-        isOpen={isNewsletterModalOpen}
-        onClose={handleCloseNewsletterModal}
-      />
+      {/* Newsletter Subscription Modal - removed, now navigates to /newsletter page */}
     </header>
   );
 };
