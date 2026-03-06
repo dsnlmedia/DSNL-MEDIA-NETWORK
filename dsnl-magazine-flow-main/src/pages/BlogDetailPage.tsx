@@ -36,7 +36,7 @@ export default function BlogDetailPage() {
                     <AlertCircle size={40} className="text-destructive" />
                     <p className="text-headline text-lg font-semibold">Article not found</p>
                     <Button variant="ghost" onClick={() => navigate('/blogs')} className="mt-2">
-                        <ArrowLeft size={16} className="mr-2" /> Back to Blogs
+                        <ArrowLeft size={16} className="mr-2" /> Back to Articles
                     </Button>
                 </div>
             </div>
@@ -55,7 +55,7 @@ export default function BlogDetailPage() {
                     className="mb-8 text-body hover:text-headline -ml-2"
                 >
                     <ArrowLeft size={16} className="mr-2" />
-                    Back to Blogs
+                    Back to Articles
                 </Button>
 
 
@@ -105,7 +105,7 @@ export default function BlogDetailPage() {
                         className="border-primary/30 text-primary hover:bg-primary/10"
                     >
                         <ArrowLeft size={16} className="mr-2" />
-                        Back to Blogs
+                        Back to Articles
                     </Button>
                 </div>
             </main>
