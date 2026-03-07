@@ -1,8 +1,4 @@
-﻿export const config = {
-  maxDuration: 60,
-};
-
-const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
+﻿const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
 const MAX_PER_PAGE = 50;
 const MAX_PAGES_TO_SCAN = 5;
 
@@ -25,42 +21,12 @@ const FEEDS = {
   },
 };
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-function uniq(values) {
-  return [...new Set(values.filter(Boolean))];
-}
-
-function ensureAbsoluteUrl(url) {
-  if (!url) return "";
-  if (url.startsWith("//")) return `https:${url}`;
-  if (/^https?:\/\//i.test(url)) return url;
-  return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
-}
-
-function extractPostId(rawId) {
-  const match = String(rawId ?? "").match(/post-(\d+)$/);
-  return match ? match[1] : "";
-}
-
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -84,12 +50,9 @@ function ensureAbsoluteUrl(url) {
   return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
 }
 
-async function fetchEntryById(config, id) {
-  const url = `${config.baseUrl}/${encodeURIComponent(id)}?alt=json`;
-  const res = await fetchWithTimeout(url);
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data?.entry ?? null;
+function extractPostId(rawId) {
+  const match = String(rawId ?? "").match(/post-(\d+)$/);
+  return match ? match[1] : "";
 }
 
 function extractImage(entry) {
@@ -100,19 +63,22 @@ function extractImage(entry) {
       .replace(/\/s72-[^/]+\//, "/w1200-h630-c/");
   }
 
-  return null;
+  const html = entry?.content?.$t ?? "";
+  const imgMatch =
+    html.match(/<img[^>]+src=["']([^"']+)["']/i) ||
+    html.match(/<img[^>]+data-src=["']([^"']+)["']/i) ||
+    html.match(/<img[^>]+data-original=["']([^"']+)["']/i);
+
+  if (imgMatch) return ensureAbsoluteUrl(imgMatch[1]);
+
+  const srcSetMatch = html.match(/<img[^>]+srcset=["']([^"']+)["']/i);
+  if (srcSetMatch) {
+    const firstSrcSetUrl = srcSetMatch[1].split(",")[0]?.trim().split(" ")[0];
+    if (firstSrcSetUrl) return ensureAbsoluteUrl(firstSrcSetUrl);
+  }
+
+  return `${SITE_URL}/dsnl-logo.png`;
 }
-
-if (imgMatch) return imgMatch[1];
-
-const srcSetMatch = html.match(/<img[^>]+srcset=["']([^"']+)["']/i);
-if (srcSetMatch) {
-  const firstSrcSetUrl = srcSetMatch[1].split(",")[0]?.trim().split(" ")[0];
-  if (firstSrcSetUrl) return firstSrcSetUrl;
-}
-
-return imgMatch ? imgMatch[1] : `${SITE_URL}/dsnl-logo.png`;
-
 
 function buildHtml(config, id, title, description, image) {
   const safeTitle = escapeHtml(title || config.fallbackTitle);
