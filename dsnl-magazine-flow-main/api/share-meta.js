@@ -1,8 +1,14 @@
+﻿export const config = {
+  maxDuration: 60,
+};
+
 const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
 const MAX_PER_PAGE = 500;
 const FETCH_TIMEOUT_MS = 12000;
-const METADATA_ATTEMPTS = 3;
-const RETRY_WAIT_MS = 1200;
+const IMAGE_CHECK_TIMEOUT_MS = 6000;
+const ENTRY_ATTEMPTS = 6;
+const IMAGE_ATTEMPTS = 4;
+const RETRY_WAIT_MS = 2000;
 
 const FEEDS = {
   blog: {
@@ -21,12 +27,42 @@ const FEEDS = {
   },
 };
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function uniq(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function ensureAbsoluteUrl(url) {
+  if (!url) return "";
+  if (url.startsWith("//")) return `https:${url}`;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
+function extractPostId(rawId) {
+  const match = String(rawId ?? "").match(/post-(\d+)$/);
+  return match ? match[1] : "";
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
+    .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -43,102 +79,230 @@ function truncate(text, max = 180) {
   return `${text.slice(0, max).trimEnd()}...`;
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+function getThumbCandidates(thumbUrl) {
+  if (!thumbUrl) return [];
 
-async function fetchWithTimeout(url, options = {}) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-function ensureAbsoluteUrl(url) {
-  if (!url) return "";
-  if (url.startsWith("//")) return `https:${url}`;
-  if (/^https?:\/\//i.test(url)) return url;
-  return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
-}
-
-function extractPostId(rawId) {
-  const match = String(rawId ?? "").match(/post-(\d+)$/);
-  return match ? match[1] : "";
-}
-
-function extractImage(entry) {
-  const thumb = entry?.["media$thumbnail"]?.url ?? "";
-  if (thumb) {
-    return ensureAbsoluteUrl(
-      thumb
-      .replace(/\/s\d+-c\//, "/w1200-h630-c/")
-      .replace(/\/s72-[^/]+\//, "/w1200-h630-c/")
+  const candidates = [thumbUrl];
+  if (/\/s\d+-c\//.test(thumbUrl) || /\/s72-[^/]+\//.test(thumbUrl)) {
+    candidates.push(
+      thumbUrl.replace(/\/s\d+-c\//, "/w1200-h630-c/").replace(/\/s72-[^/]+\//, "/w1200-h630-c/")
+    );
+    candidates.push(
+      thumbUrl.replace(/\/s\d+-c\//, "/w640-h360-c/").replace(/\/s72-[^/]+\//, "/w640-h360-c/")
     );
   }
 
-  const html = entry?.content?.$t ?? "";
-  const imgMatch =
-    html.match(/<img[^>]+src=["']([^"']+)["']/i) ||
-    html.match(/<img[^>]+data-src=["']([^"']+)["']/i) ||
-    html.match(/<img[^>]+data-original=["']([^"']+)["']/i);
-
-  if (imgMatch) return ensureAbsoluteUrl(imgMatch[1]);
-
-  const srcSetMatch = html.match(/<img[^>]+srcset=["']([^"']+)["']/i);
-  if (srcSetMatch) {
-    const firstSrcSetUrl = srcSetMatch[1].split(",")[0]?.trim().split(" ")[0];
-    if (firstSrcSetUrl) return ensureAbsoluteUrl(firstSrcSetUrl);
-  }
-
-  return "";
+  return uniq(candidates.map(ensureAbsoluteUrl));
 }
 
-async function extractImageFromPostPage(entry) {
+function extractImageCandidatesFromHtml(html) {
+  if (!html) return [];
+
+  const candidates = [];
+
+  const srcRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+  const dataSrcRegex = /<img[^>]+data-src=["']([^"']+)["']/gi;
+  const dataOrigRegex = /<img[^>]+data-original=["']([^"']+)["']/gi;
+  const srcSetRegex = /<img[^>]+srcset=["']([^"']+)["']/gi;
+
+  for (const regex of [srcRegex, dataSrcRegex, dataOrigRegex]) {
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+      candidates.push(match[1]);
+    }
+  }
+
+  let srcSetMatch;
+  while ((srcSetMatch = srcSetRegex.exec(html)) !== null) {
+    const srcSetValue = srcSetMatch[1] || "";
+    const first = srcSetValue.split(",")[0]?.trim().split(" ")[0];
+    if (first) candidates.push(first);
+  }
+
+  return uniq(candidates.map(ensureAbsoluteUrl));
+}
+
+function extractImageCandidatesFromEntry(entry) {
+  const thumb = entry?.["media$thumbnail"]?.url ?? "";
+  const html = entry?.content?.$t ?? "";
+
+  return uniq([
+    ...getThumbCandidates(thumb),
+    ...extractImageCandidatesFromHtml(html),
+  ]);
+}
+
+async function fetchEntryById(config, id) {
+  const url = `${config.baseUrl}/${encodeURIComponent(id)}?alt=json`;
+  const res = await fetchWithTimeout(url);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data?.entry ?? null;
+}
+
+async function fetchEntryByQuery(config, id) {
+  const url = `${config.baseUrl}?alt=json&max-results=10&q=${encodeURIComponent(id)}`;
+  const res = await fetchWithTimeout(url);
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  const entries = data?.feed?.entry ?? [];
+  const match = entries.find((entry) => extractPostId(entry?.id?.$t) === id);
+  return match ?? null;
+}
+
+async function scanEntryInFeed(config, id) {
+  let startIndex = 1;
+  let totalResults = Infinity;
+
+  while (startIndex <= totalResults) {
+    const url = `${config.baseUrl}?alt=json&max-results=${MAX_PER_PAGE}&start-index=${startIndex}`;
+    const res = await fetchWithTimeout(url);
+    if (!res.ok) break;
+
+    const data = await res.json();
+    const feed = data?.feed ?? {};
+    const entries = feed.entry ?? [];
+
+    if (startIndex === 1) {
+      totalResults = parseInt(feed?.openSearch$totalResults?.$t ?? "0", 10) || 0;
+      if (!totalResults) break;
+    }
+
+    if (!entries.length) break;
+
+    const match = entries.find((entry) => extractPostId(entry?.id?.$t) === id);
+    if (match) return match;
+
+    startIndex += entries.length;
+  }
+
+  return null;
+}
+
+async function resolveEntryWithRetries(config, id) {
+  for (let attempt = 1; attempt <= ENTRY_ATTEMPTS; attempt += 1) {
+    const byId = await fetchEntryById(config, id);
+    if (byId) return byId;
+
+    const byQuery = await fetchEntryByQuery(config, id);
+    if (byQuery) return byQuery;
+
+    // Full scan periodically and on final attempt.
+    if (attempt === ENTRY_ATTEMPTS || attempt % 2 === 0) {
+      const byScan = await scanEntryInFeed(config, id);
+      if (byScan) return byScan;
+    }
+
+    if (attempt < ENTRY_ATTEMPTS) {
+      await sleep(RETRY_WAIT_MS);
+    }
+  }
+
+  return null;
+}
+
+async function extractPostPageImageCandidates(entry) {
   const alternateUrl = (entry?.link ?? []).find((link) => link?.rel === "alternate")?.href;
-  if (!alternateUrl) return "";
+  if (!alternateUrl) return [];
 
   try {
-    const res = await fetchWithTimeout(alternateUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; DSNLShareBot/1.0)",
+    const res = await fetchWithTimeout(
+      alternateUrl,
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; DSNLShareBot/1.0)",
+          "Accept": "text/html,application/xhtml+xml",
+        },
       },
-    });
-    if (!res.ok) return "";
+      FETCH_TIMEOUT_MS
+    );
+
+    if (!res.ok) return [];
 
     const html = await res.text();
-    const ogImageMatch =
-      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i) ||
-      html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i) ||
-      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i);
 
-    if (ogImageMatch?.[1]) return ensureAbsoluteUrl(ogImageMatch[1]);
+    const metaCandidates = [];
+    const ogMetaRegexes = [
+      /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/gi,
+      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/gi,
+      /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/gi,
+      /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/gi,
+    ];
 
-    const htmlImageMatch =
-      html.match(/<img[^>]+src=["']([^"']+)["']/i) ||
-      html.match(/<img[^>]+data-src=["']([^"']+)["']/i) ||
-      html.match(/<img[^>]+data-original=["']([^"']+)["']/i);
+    for (const regex of ogMetaRegexes) {
+      let match;
+      while ((match = regex.exec(html)) !== null) {
+        metaCandidates.push(match[1]);
+      }
+    }
 
-    return ensureAbsoluteUrl(htmlImageMatch?.[1] ?? "");
+    return uniq([
+      ...metaCandidates.map(ensureAbsoluteUrl),
+      ...extractImageCandidatesFromHtml(html),
+    ]);
   } catch {
-    return "";
+    return [];
   }
 }
 
-async function resolveImage(entry) {
-  const imageFromFeed = extractImage(entry);
-  if (imageFromFeed) return imageFromFeed;
+async function isReachableImage(url) {
+  if (!url) return false;
 
-  const imageFromPostPage = await extractImageFromPostPage(entry);
-  if (imageFromPostPage) return imageFromPostPage;
+  try {
+    const head = await fetchWithTimeout(url, { method: "HEAD" }, IMAGE_CHECK_TIMEOUT_MS);
+    if (head.ok) {
+      const contentType = (head.headers.get("content-type") || "").toLowerCase();
+      if (!contentType || contentType.startsWith("image/")) return true;
+    }
+  } catch {
+    // Try GET fallback below.
+  }
+
+  try {
+    const get = await fetchWithTimeout(
+      url,
+      {
+        method: "GET",
+        headers: { Range: "bytes=0-2048" },
+      },
+      IMAGE_CHECK_TIMEOUT_MS
+    );
+
+    if (!get.ok && get.status !== 206) return false;
+    const contentType = (get.headers.get("content-type") || "").toLowerCase();
+    return !contentType || contentType.startsWith("image/");
+  } catch {
+    return false;
+  }
+}
+
+async function pickReachableImage(candidates) {
+  for (const candidate of uniq(candidates)) {
+    if (await isReachableImage(candidate)) {
+      return candidate;
+    }
+  }
+  return "";
+}
+
+async function resolveImageWithRetries(entry) {
+  const feedCandidates = extractImageCandidatesFromEntry(entry);
+
+  for (let attempt = 1; attempt <= IMAGE_ATTEMPTS; attempt += 1) {
+    const postPageCandidates = await extractPostPageImageCandidates(entry);
+    const image = await pickReachableImage([...feedCandidates, ...postPageCandidates]);
+    if (image) return image;
+
+    if (attempt < IMAGE_ATTEMPTS) {
+      await sleep(RETRY_WAIT_MS);
+    }
+  }
 
   return "";
 }
 
-function resolveDescription(config, entry, title) {
+function resolveDescription(entry, title) {
   const contentText = stripHtml(entry?.content?.$t || "");
   const summaryText = stripHtml(entry?.summary?.$t || "");
   const rawText = contentText || summaryText;
@@ -148,7 +312,7 @@ function resolveDescription(config, entry, title) {
 
 function buildHtml(config, id, title, description, image) {
   const safeTitle = escapeHtml(title || config.fallbackTitle);
-  const safeDescription = escapeHtml(description || `Read "${safeTitle}" on DSNL Media Network.`);
+  const safeDescription = escapeHtml(description || `Read "${title}" on DSNL Media Network.`);
   const safeImage = escapeHtml(image);
   const canonicalUrl = `${SITE_URL}/${config.pathBase}/${encodeURIComponent(id)}`;
   const safeCanonicalUrl = escapeHtml(canonicalUrl);
@@ -194,41 +358,6 @@ function buildHtml(config, id, title, description, image) {
 </html>`;
 }
 
-async function fetchEntry(config, id) {
-  const url = `${config.baseUrl}/${encodeURIComponent(id)}?alt=json`;
-  const res = await fetchWithTimeout(url);
-  if (res.ok) {
-    const data = await res.json();
-    if (data?.entry) return data.entry;
-  }
-
-  // Exhaustive scan from latest to oldest pages until match is found.
-  let startIndex = 1;
-  let totalResults = Infinity;
-
-  while (startIndex <= totalResults) {
-    const feedUrl = `${config.baseUrl}?alt=json&max-results=${MAX_PER_PAGE}&start-index=${startIndex}`;
-    const feedRes = await fetchWithTimeout(feedUrl);
-    if (!feedRes.ok) break;
-
-    const feedData = await feedRes.json();
-    const feed = feedData?.feed ?? {};
-    const entries = feed.entry ?? [];
-    if (startIndex === 1) {
-      totalResults = parseInt(feed?.openSearch$totalResults?.$t ?? "0", 10) || 0;
-      if (totalResults === 0) break;
-    }
-    if (!entries.length) break;
-
-    const match = entries.find((entry) => extractPostId(entry?.id?.$t) === id);
-    if (match) return match;
-
-    startIndex += entries.length;
-  }
-
-  return null;
-}
-
 export default async function handler(req, res) {
   const rawType = String(req.query?.type || "blog").toLowerCase();
   const id = String(req.query?.id || "").trim();
@@ -240,39 +369,32 @@ export default async function handler(req, res) {
   }
 
   try {
-    let entry = null;
-    let image = "";
-
-    for (let attempt = 1; attempt <= METADATA_ATTEMPTS; attempt += 1) {
-      entry = await fetchEntry(config, id);
-      if (entry) {
-        image = await resolveImage(entry);
-        if (image) break;
-      }
-
-      if (attempt < METADATA_ATTEMPTS) {
-        await sleep(RETRY_WAIT_MS);
-      }
-    }
-
-    if (!entry || !image) {
+    const entry = await resolveEntryWithRetries(config, id);
+    if (!entry) {
       res.setHeader("Cache-Control", "no-store, max-age=0");
-      res.setHeader("Retry-After", "15");
+      res.setHeader("Retry-After", "20");
       res.status(503).send("Metadata is still syncing. Please retry in a moment.");
       return;
     }
 
+    const image = await resolveImageWithRetries(entry);
+    if (!image) {
+      res.setHeader("Cache-Control", "no-store, max-age=0");
+      res.setHeader("Retry-After", "20");
+      res.status(503).send("Image is still syncing. Please retry in a moment.");
+      return;
+    }
+
     const title = stripHtml(entry?.title?.$t || config.fallbackTitle);
-    const description = resolveDescription(config, entry, title);
+    const description = resolveDescription(entry, title);
+
     const html = buildHtml(config, id, title, description, image);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "no-store, max-age=0");
     res.status(200).send(html);
-    return;
   } catch {
     res.setHeader("Cache-Control", "no-store, max-age=0");
-    res.setHeader("Retry-After", "15");
+    res.setHeader("Retry-After", "20");
     res.status(503).send("Metadata lookup failed. Please retry shortly.");
-    return;
   }
 }
