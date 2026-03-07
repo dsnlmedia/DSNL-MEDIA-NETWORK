@@ -1,7 +1,7 @@
 ﻿const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
 const MAX_PER_PAGE = 50;
 const MAX_PAGES_TO_SCAN = 5;
-const FETCH_TIMEOUT_MS = 20000;
+const FETCH_TIMEOUT_MS = 200000;
 const LOOKUP_RETRY_ATTEMPTS = 3;
 const LOOKUP_RETRY_DELAY_MS = 1200;
 
