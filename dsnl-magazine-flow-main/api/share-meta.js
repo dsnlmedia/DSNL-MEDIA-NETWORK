@@ -5,7 +5,6 @@
 const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
 const MAX_PER_PAGE = 500;
 const FETCH_TIMEOUT_MS = 12000;
-const IMAGE_CHECK_TIMEOUT_MS = 6000;
 const ENTRY_ATTEMPTS = 6;
 const IMAGE_ATTEMPTS = 4;
 const RETRY_WAIT_MS = 2000;
@@ -140,6 +139,14 @@ async function fetchEntryById(config, id) {
   return data?.entry ?? null;
 }
 
+async function fetchEntryByDashId(config, id) {
+  const url = `${config.baseUrl}/-/${encodeURIComponent(id)}?alt=json`;
+  const res = await fetchWithTimeout(url);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data?.entry ?? null;
+}
+
 async function fetchEntryByQuery(config, id) {
   const url = `${config.baseUrl}?alt=json&max-results=10&q=${encodeURIComponent(id)}`;
   const res = await fetchWithTimeout(url);
@@ -184,6 +191,9 @@ async function resolveEntryWithRetries(config, id) {
   for (let attempt = 1; attempt <= ENTRY_ATTEMPTS; attempt += 1) {
     const byId = await fetchEntryById(config, id);
     if (byId) return byId;
+
+    const byDashId = await fetchEntryByDashId(config, id);
+    if (byDashId) return byDashId;
 
     const byQuery = await fetchEntryByQuery(config, id);
     if (byQuery) return byQuery;
@@ -246,53 +256,15 @@ async function extractPostPageImageCandidates(entry) {
   }
 }
 
-async function isReachableImage(url) {
-  if (!url) return false;
-
-  try {
-    const head = await fetchWithTimeout(url, { method: "HEAD" }, IMAGE_CHECK_TIMEOUT_MS);
-    if (head.ok) {
-      const contentType = (head.headers.get("content-type") || "").toLowerCase();
-      if (!contentType || contentType.startsWith("image/")) return true;
-    }
-  } catch {
-    // Try GET fallback below.
-  }
-
-  try {
-    const get = await fetchWithTimeout(
-      url,
-      {
-        method: "GET",
-        headers: { Range: "bytes=0-2048" },
-      },
-      IMAGE_CHECK_TIMEOUT_MS
-    );
-
-    if (!get.ok && get.status !== 206) return false;
-    const contentType = (get.headers.get("content-type") || "").toLowerCase();
-    return !contentType || contentType.startsWith("image/");
-  } catch {
-    return false;
-  }
-}
-
-async function pickReachableImage(candidates) {
-  for (const candidate of uniq(candidates)) {
-    if (await isReachableImage(candidate)) {
-      return candidate;
-    }
-  }
-  return "";
-}
-
 async function resolveImageWithRetries(entry) {
   const feedCandidates = extractImageCandidatesFromEntry(entry);
+  if (feedCandidates.length > 0) {
+    return feedCandidates[0];
+  }
 
   for (let attempt = 1; attempt <= IMAGE_ATTEMPTS; attempt += 1) {
     const postPageCandidates = await extractPostPageImageCandidates(entry);
-    const image = await pickReachableImage([...feedCandidates, ...postPageCandidates]);
-    if (image) return image;
+    if (postPageCandidates.length > 0) return postPageCandidates[0];
 
     if (attempt < IMAGE_ATTEMPTS) {
       await sleep(RETRY_WAIT_MS);
