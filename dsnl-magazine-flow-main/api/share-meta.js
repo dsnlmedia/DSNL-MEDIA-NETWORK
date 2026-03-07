@@ -1,6 +1,8 @@
 const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
-const MAX_PER_PAGE = 50;
-const MAX_PAGES_TO_SCAN = 5;
+const MAX_PER_PAGE = 500;
+const FETCH_TIMEOUT_MS = 12000;
+const METADATA_ATTEMPTS = 3;
+const RETRY_WAIT_MS = 1200;
 
 const FEEDS = {
   blog: {
@@ -8,7 +10,6 @@ const FEEDS = {
     pathBase: "blogs",
     redirectParam: "blogId",
     fallbackTitle: "DSNL Article",
-    fallbackDescription: "Read this article on DSNL Media Network.",
     openingText: "Opening article...",
   },
   newsletter: {
@@ -16,7 +17,6 @@ const FEEDS = {
     pathBase: "newsletter",
     redirectParam: "newsletterId",
     fallbackTitle: "DSNL Newsletter",
-    fallbackDescription: "Read this newsletter on DSNL Media Network.",
     openingText: "Opening newsletter...",
   },
 };
@@ -43,8 +43,22 @@ function truncate(text, max = 180) {
   return `${text.slice(0, max).trimEnd()}...`;
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 function ensureAbsoluteUrl(url) {
-  if (!url) return `${SITE_URL}/dsnl-logo.png`;
+  if (!url) return "";
   if (url.startsWith("//")) return `https:${url}`;
   if (/^https?:\/\//i.test(url)) return url;
   return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
@@ -58,9 +72,11 @@ function extractPostId(rawId) {
 function extractImage(entry) {
   const thumb = entry?.["media$thumbnail"]?.url ?? "";
   if (thumb) {
-    return thumb
+    return ensureAbsoluteUrl(
+      thumb
       .replace(/\/s\d+-c\//, "/w1200-h630-c/")
-      .replace(/\/s72-[^/]+\//, "/w1200-h630-c/");
+      .replace(/\/s72-[^/]+\//, "/w1200-h630-c/")
+    );
   }
 
   const html = entry?.content?.$t ?? "";
@@ -69,21 +85,71 @@ function extractImage(entry) {
     html.match(/<img[^>]+data-src=["']([^"']+)["']/i) ||
     html.match(/<img[^>]+data-original=["']([^"']+)["']/i);
 
-  if (imgMatch) return imgMatch[1];
+  if (imgMatch) return ensureAbsoluteUrl(imgMatch[1]);
 
   const srcSetMatch = html.match(/<img[^>]+srcset=["']([^"']+)["']/i);
   if (srcSetMatch) {
     const firstSrcSetUrl = srcSetMatch[1].split(",")[0]?.trim().split(" ")[0];
-    if (firstSrcSetUrl) return firstSrcSetUrl;
+    if (firstSrcSetUrl) return ensureAbsoluteUrl(firstSrcSetUrl);
   }
 
-  return imgMatch ? imgMatch[1] : `${SITE_URL}/dsnl-logo.png`;
+  return "";
+}
+
+async function extractImageFromPostPage(entry) {
+  const alternateUrl = (entry?.link ?? []).find((link) => link?.rel === "alternate")?.href;
+  if (!alternateUrl) return "";
+
+  try {
+    const res = await fetchWithTimeout(alternateUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; DSNLShareBot/1.0)",
+      },
+    });
+    if (!res.ok) return "";
+
+    const html = await res.text();
+    const ogImageMatch =
+      html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i) ||
+      html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i);
+
+    if (ogImageMatch?.[1]) return ensureAbsoluteUrl(ogImageMatch[1]);
+
+    const htmlImageMatch =
+      html.match(/<img[^>]+src=["']([^"']+)["']/i) ||
+      html.match(/<img[^>]+data-src=["']([^"']+)["']/i) ||
+      html.match(/<img[^>]+data-original=["']([^"']+)["']/i);
+
+    return ensureAbsoluteUrl(htmlImageMatch?.[1] ?? "");
+  } catch {
+    return "";
+  }
+}
+
+async function resolveImage(entry) {
+  const imageFromFeed = extractImage(entry);
+  if (imageFromFeed) return imageFromFeed;
+
+  const imageFromPostPage = await extractImageFromPostPage(entry);
+  if (imageFromPostPage) return imageFromPostPage;
+
+  return "";
+}
+
+function resolveDescription(config, entry, title) {
+  const contentText = stripHtml(entry?.content?.$t || "");
+  const summaryText = stripHtml(entry?.summary?.$t || "");
+  const rawText = contentText || summaryText;
+  if (rawText) return truncate(rawText, 180);
+  return `Read "${title}" on DSNL Media Network.`;
 }
 
 function buildHtml(config, id, title, description, image) {
   const safeTitle = escapeHtml(title || config.fallbackTitle);
-  const safeDescription = escapeHtml(description || config.fallbackDescription);
-  const safeImage = escapeHtml(ensureAbsoluteUrl(image));
+  const safeDescription = escapeHtml(description || `Read "${safeTitle}" on DSNL Media Network.`);
+  const safeImage = escapeHtml(image);
   const canonicalUrl = `${SITE_URL}/${config.pathBase}/${encodeURIComponent(id)}`;
   const safeCanonicalUrl = escapeHtml(canonicalUrl);
   const safeId = escapeHtml(id);
@@ -130,25 +196,34 @@ function buildHtml(config, id, title, description, image) {
 
 async function fetchEntry(config, id) {
   const url = `${config.baseUrl}/${encodeURIComponent(id)}?alt=json`;
-  const res = await fetch(url);
+  const res = await fetchWithTimeout(url);
   if (res.ok) {
     const data = await res.json();
     if (data?.entry) return data.entry;
   }
 
-  // Fallback: scan latest feed pages and match by extracted numeric post id.
-  for (let page = 0; page < MAX_PAGES_TO_SCAN; page += 1) {
-    const startIndex = 1 + page * MAX_PER_PAGE;
+  // Exhaustive scan from latest to oldest pages until match is found.
+  let startIndex = 1;
+  let totalResults = Infinity;
+
+  while (startIndex <= totalResults) {
     const feedUrl = `${config.baseUrl}?alt=json&max-results=${MAX_PER_PAGE}&start-index=${startIndex}`;
-    const feedRes = await fetch(feedUrl);
+    const feedRes = await fetchWithTimeout(feedUrl);
     if (!feedRes.ok) break;
 
     const feedData = await feedRes.json();
-    const entries = feedData?.feed?.entry ?? [];
+    const feed = feedData?.feed ?? {};
+    const entries = feed.entry ?? [];
+    if (startIndex === 1) {
+      totalResults = parseInt(feed?.openSearch$totalResults?.$t ?? "0", 10) || 0;
+      if (totalResults === 0) break;
+    }
     if (!entries.length) break;
 
     const match = entries.find((entry) => extractPostId(entry?.id?.$t) === id);
     if (match) return match;
+
+    startIndex += entries.length;
   }
 
   return null;
@@ -164,23 +239,40 @@ export default async function handler(req, res) {
     return;
   }
 
-  let title = config.fallbackTitle;
-  let description = config.fallbackDescription;
-  let image = `${SITE_URL}/dsnl-logo.png`;
-
   try {
-    const entry = await fetchEntry(config, id);
-    if (entry) {
-      title = stripHtml(entry?.title?.$t || config.fallbackTitle);
-      description = truncate(stripHtml(entry?.content?.$t || ""), 180) || config.fallbackDescription;
-      image = extractImage(entry);
-    }
-  } catch {
-    // Serve fallback metadata if feed lookup fails.
-  }
+    let entry = null;
+    let image = "";
 
-  const html = buildHtml(config, id, title, description, image);
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
-  res.status(200).send(html);
+    for (let attempt = 1; attempt <= METADATA_ATTEMPTS; attempt += 1) {
+      entry = await fetchEntry(config, id);
+      if (entry) {
+        image = await resolveImage(entry);
+        if (image) break;
+      }
+
+      if (attempt < METADATA_ATTEMPTS) {
+        await sleep(RETRY_WAIT_MS);
+      }
+    }
+
+    if (!entry || !image) {
+      res.setHeader("Cache-Control", "no-store, max-age=0");
+      res.setHeader("Retry-After", "15");
+      res.status(503).send("Metadata is still syncing. Please retry in a moment.");
+      return;
+    }
+
+    const title = stripHtml(entry?.title?.$t || config.fallbackTitle);
+    const description = resolveDescription(config, entry, title);
+    const html = buildHtml(config, id, title, description, image);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.status(200).send(html);
+    return;
+  } catch {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.setHeader("Retry-After", "15");
+    res.status(503).send("Metadata lookup failed. Please retry shortly.");
+    return;
+  }
 }
