@@ -1,6 +1,9 @@
 ﻿const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
 const MAX_PER_PAGE = 50;
 const MAX_PAGES_TO_SCAN = 5;
+const FETCH_TIMEOUT_MS = 20000;
+const LOOKUP_RETRY_ATTEMPTS = 3;
+const LOOKUP_RETRY_DELAY_MS = 1200;
 
 const FEEDS = {
   blog: {
@@ -26,7 +29,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
+    .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -41,6 +44,20 @@ function stripHtml(value) {
 function truncate(text, max = 180) {
   if (text.length <= max) return text;
   return `${text.slice(0, max).trimEnd()}...`;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithTimeout(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function ensureAbsoluteUrl(url) {
@@ -130,7 +147,7 @@ function buildHtml(config, id, title, description, image) {
 
 async function fetchEntry(config, id) {
   const url = `${config.baseUrl}/${encodeURIComponent(id)}?alt=json`;
-  const res = await fetch(url);
+  const res = await fetchWithTimeout(url);
   if (res.ok) {
     const data = await res.json();
     if (data?.entry) return data.entry;
@@ -140,7 +157,7 @@ async function fetchEntry(config, id) {
   for (let page = 0; page < MAX_PAGES_TO_SCAN; page += 1) {
     const startIndex = 1 + page * MAX_PER_PAGE;
     const feedUrl = `${config.baseUrl}?alt=json&max-results=${MAX_PER_PAGE}&start-index=${startIndex}`;
-    const feedRes = await fetch(feedUrl);
+    const feedRes = await fetchWithTimeout(feedUrl);
     if (!feedRes.ok) break;
 
     const feedData = await feedRes.json();
@@ -169,7 +186,15 @@ export default async function handler(req, res) {
   let image = `${SITE_URL}/dsnl-logo.png`;
 
   try {
-    const entry = await fetchEntry(config, id);
+    let entry = null;
+    for (let attempt = 1; attempt <= LOOKUP_RETRY_ATTEMPTS; attempt += 1) {
+      entry = await fetchEntry(config, id);
+      if (entry) break;
+      if (attempt < LOOKUP_RETRY_ATTEMPTS) {
+        await sleep(LOOKUP_RETRY_DELAY_MS);
+      }
+    }
+
     if (entry) {
       title = stripHtml(entry?.title?.$t || config.fallbackTitle);
       description = truncate(stripHtml(entry?.content?.$t || ""), 180) || config.fallbackDescription;
