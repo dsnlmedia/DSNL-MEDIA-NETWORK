@@ -1,6 +1,14 @@
 {
   "routes": [
     {
+      "src": "/blogs/([^/]+)",
+      "dest": "/api/share-meta?type=blog&id=$1"
+    },
+    {
+      "src": "/newsletter/([^/]+)",
+      "dest": "/api/share-meta?type=newsletter&id=$1"
+    },
+    {
       "handle": "filesystem"
     },
     {
