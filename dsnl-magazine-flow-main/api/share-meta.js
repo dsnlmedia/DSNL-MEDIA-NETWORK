@@ -1,4 +1,6 @@
 const SITE_URL = process.env.SITE_URL || "https://www.dsnlmedia.co.in";
+const MAX_PER_PAGE = 50;
+const MAX_PAGES_TO_SCAN = 5;
 
 const FEEDS = {
   blog: {
@@ -43,8 +45,14 @@ function truncate(text, max = 180) {
 
 function ensureAbsoluteUrl(url) {
   if (!url) return `${SITE_URL}/dsnl-logo.png`;
+  if (url.startsWith("//")) return `https:${url}`;
   if (/^https?:\/\//i.test(url)) return url;
   return `${SITE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
+function extractPostId(rawId) {
+  const match = String(rawId ?? "").match(/post-(\d+)$/);
+  return match ? match[1] : "";
 }
 
 function extractImage(entry) {
@@ -56,7 +64,19 @@ function extractImage(entry) {
   }
 
   const html = entry?.content?.$t ?? "";
-  const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  const imgMatch =
+    html.match(/<img[^>]+src=["']([^"']+)["']/i) ||
+    html.match(/<img[^>]+data-src=["']([^"']+)["']/i) ||
+    html.match(/<img[^>]+data-original=["']([^"']+)["']/i);
+
+  if (imgMatch) return imgMatch[1];
+
+  const srcSetMatch = html.match(/<img[^>]+srcset=["']([^"']+)["']/i);
+  if (srcSetMatch) {
+    const firstSrcSetUrl = srcSetMatch[1].split(",")[0]?.trim().split(" ")[0];
+    if (firstSrcSetUrl) return firstSrcSetUrl;
+  }
+
   return imgMatch ? imgMatch[1] : `${SITE_URL}/dsnl-logo.png`;
 }
 
@@ -83,6 +103,9 @@ function buildHtml(config, id, title, description, image) {
     <meta property="og:title" content="${safeTitle}" />
     <meta property="og:description" content="${safeDescription}" />
     <meta property="og:image" content="${safeImage}" />
+    <meta property="og:image:secure_url" content="${safeImage}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:url" content="${safeCanonicalUrl}" />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -108,9 +131,27 @@ function buildHtml(config, id, title, description, image) {
 async function fetchEntry(config, id) {
   const url = `${config.baseUrl}/${encodeURIComponent(id)}?alt=json`;
   const res = await fetch(url);
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data?.entry ?? null;
+  if (res.ok) {
+    const data = await res.json();
+    if (data?.entry) return data.entry;
+  }
+
+  // Fallback: scan latest feed pages and match by extracted numeric post id.
+  for (let page = 0; page < MAX_PAGES_TO_SCAN; page += 1) {
+    const startIndex = 1 + page * MAX_PER_PAGE;
+    const feedUrl = `${config.baseUrl}?alt=json&max-results=${MAX_PER_PAGE}&start-index=${startIndex}`;
+    const feedRes = await fetch(feedUrl);
+    if (!feedRes.ok) break;
+
+    const feedData = await feedRes.json();
+    const entries = feedData?.feed?.entry ?? [];
+    if (!entries.length) break;
+
+    const match = entries.find((entry) => extractPostId(entry?.id?.$t) === id);
+    if (match) return match;
+  }
+
+  return null;
 }
 
 export default async function handler(req, res) {
@@ -140,7 +181,6 @@ export default async function handler(req, res) {
 
   const html = buildHtml(config, id, title, description, image);
   res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
+  res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=600");
   res.status(200).send(html);
 }
-
