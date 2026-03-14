@@ -9,6 +9,10 @@
       "dest": "/api/share-meta?type=newsletter&id=$1"
     },
     {
+      "src": "/editorial-speaks/([^/]+)",
+      "dest": "/api/share-meta?type=editorial&id=$1"
+    },
+    {
       "handle": "filesystem"
     },
     {

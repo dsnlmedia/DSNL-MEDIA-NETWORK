@@ -13,6 +13,8 @@ import BlogsPage from "./pages/BlogsPage";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import NewsletterPage from "./pages/NewsletterPage";
 import NewsletterDetailPage from "./pages/NewsletterDetailPage";
+import EditorialPage from "./pages/EditorialPage";
+import EditorialDetailPage from "./pages/EditorialDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,11 @@ function QueryRedirectHandler() {
     const newsletterId = params.get("newsletterId");
     if (newsletterId) {
       navigate(`/newsletter/${newsletterId}`, { replace: true });
+      return;
+    }
+    const editorialId = params.get("editorialId");
+    if (editorialId) {
+      navigate(`/editorial-speaks/${editorialId}`, { replace: true });
       return;
     }
   }, [location.search, navigate]);
@@ -53,6 +60,8 @@ const App = () => (
           <Route path="/blogs/:postId" element={<BlogDetailPage />} />
           <Route path="/newsletter" element={<NewsletterPage />} />
           <Route path="/newsletter/:postId" element={<NewsletterDetailPage />} />
+          <Route path="/editorial-speaks" element={<EditorialPage />} />
+          <Route path="/editorial-speaks/:postId" element={<EditorialDetailPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -5,13 +5,14 @@ import { StoryCard } from "./StoryCard";
 import { StoryModal } from "./StoryModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Globe, Briefcase, Smartphone, Users, ChevronRight, Zap, MapPin, Tv, Monitor, BarChart3, Building, Gamepad2, Heart, Loader2, Trophy, BookOpen, Calendar, ExternalLink, Newspaper } from "lucide-react";
+import { TrendingUp, Globe, Briefcase, Smartphone, Users, ChevronRight, Zap, MapPin, Tv, Monitor, BarChart3, Building, Gamepad2, Heart, Loader2, Trophy, BookOpen, Calendar, ExternalLink, Newspaper, Edit3 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTrendingStories, useNewsByCategory } from "@/hooks/useNews";
 import { bloggerService, type BlogPost } from "@/services/bloggerService";
 import { newsletterService, type NewsletterPost } from "@/services/newsletterService";
+import { editorialService, type EditorialPost } from "@/services/editorialService";
 import heroTechImage from "@/assets/hero-tech.jpg";
 import heroBusinessImage from "@/assets/hero-business.jpg";
 import heroWorldImage from "@/assets/hero-world.jpg";
@@ -45,6 +46,11 @@ export const HomePage = () => {
   const { data: newsletterPosts } = useQuery<NewsletterPost[]>({
     queryKey: ['dsnl-newsletters'],
     queryFn: () => newsletterService.getPosts(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const { data: editorialPosts } = useQuery<EditorialPost[]>({
+    queryKey: ['dsnl-editorials'],
+    queryFn: () => editorialService.getPosts(),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -276,6 +282,9 @@ export const HomePage = () => {
   const topNewsletterPosts = [...(newsletterPosts || [])]
     .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
     .slice(0, 3);
+  const topEditorialPosts = [...(editorialPosts || [])]
+    .sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
+    .slice(0, 3);
 
   const exploreCategories = [
     { name: "Trending Stories", icon: TrendingUp, count: trendingStories?.length || 0, color: "bg-red-500" },
@@ -333,6 +342,14 @@ export const HomePage = () => {
 
   const handleViewAllNewsletters = () => {
     navigate('/newsletter');
+  };
+
+  const handleEditorialPostClick = (postId: string) => {
+    navigate(`/editorial-speaks/${postId}`);
+  };
+
+  const handleViewAllEditorials = () => {
+    navigate('/editorial-speaks');
   };
 
   // Handle story click - open modal instead of direct link
@@ -460,6 +477,125 @@ export const HomePage = () => {
             )}
           </div>
 
+        </div>
+      </section>
+
+      {/* Top Editorial Speaks Section */}
+      <section className="py-12 bg-premium-accent/20 border-b border-border/40">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                <Edit3 className="text-primary-foreground" size={20} />
+              </div>
+              <div>
+                <h2 className="font-display text-2xl md:text-3xl font-bold text-headline">
+                  Editor Speaks
+                </h2>
+                <p className="text-body text-sm md:text-base">
+                  Sharp editorial perspectives from the DSNL editorial desk
+                </p>
+              </div>
+            </div>
+
+            <Badge className="hidden md:flex items-center space-x-2 bg-primary/10 text-primary border-primary/20">
+              <Edit3 size={14} />
+              <span>Top 3 Editorials</span>
+            </Badge>
+          </div>
+
+          {!editorialPosts && (
+            <div className="flex items-center justify-center py-16">
+              <div className="text-center">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-metadata">Loading latest editorials...</p>
+              </div>
+            </div>
+          )}
+
+          {editorialPosts && topEditorialPosts.length === 0 && (
+            <div className="magazine-card max-w-md mx-auto">
+              <div className="flex flex-col items-center text-center p-8">
+                <Edit3 className="h-12 w-12 text-metadata mb-4" />
+                <h3 className="font-display text-lg font-bold text-headline mb-2">
+                  No Editorials Yet
+                </h3>
+                <p className="text-body text-sm mb-4">
+                  New editorial posts will appear here once they are published.
+                </p>
+                <Button onClick={handleViewAllEditorials} className="bg-primary hover:bg-primary/90">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View All Editorial Speaks
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {topEditorialPosts.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {topEditorialPosts.map((post) => (
+                <article
+                  key={post.id}
+                  onClick={() => handleEditorialPostClick(post.id)}
+                  className="group cursor-pointer bg-card border border-border/30 rounded-2xl overflow-hidden hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 flex flex-col"
+                >
+                  <div className="relative overflow-hidden aspect-[16/9] bg-muted">
+                    {post.thumbnail ? (
+                      <img
+                        src={post.thumbnail}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/20">
+                        <Edit3 size={48} className="text-primary/30" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-center gap-1.5 text-metadata text-xs mb-3">
+                      <Calendar size={12} />
+                      <span>{editorialService.formatDate(post.published)}</span>
+                    </div>
+
+                    <h3 className="font-display text-base font-semibold text-headline leading-snug mb-3 group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-body text-sm leading-relaxed line-clamp-3 flex-1">
+                      {post.excerpt}
+                    </p>
+
+                    <div className="mt-4 pt-4 border-t border-border/20 flex items-center justify-between">
+                      <span className="text-xs text-metadata">
+                        Editorial
+                      </span>
+                      <span className="flex items-center gap-1 text-primary text-xs font-semibold group-hover:gap-2 transition-all duration-200">
+                        Read Editorial <ChevronRight size={12} />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {topEditorialPosts.length > 0 && (
+            <div className="text-center mt-8">
+              <p className="text-body mb-4">
+                Explore all editorial posts from DSNL Media
+              </p>
+              <Button
+                onClick={handleViewAllEditorials}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                View All Editorial Speaks
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

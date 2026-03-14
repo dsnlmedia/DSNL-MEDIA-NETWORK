@@ -22,6 +22,14 @@ const FEEDS = {
     fallbackDescription: "Read this newsletter on DSNL Media Network.",
     openingText: "Opening newsletter...",
   },
+  editorial: {
+    baseUrl: "https://dsnlmedia-editorials.blogspot.com/feeds/posts/default",
+    pathBase: "editorial-speaks",
+    redirectParam: "editorialId",
+    fallbackTitle: "DSNL Editorial",
+    fallbackDescription: "Read this editorial on DSNL Media Network.",
+    openingText: "Opening editorial...",
+  },
 };
 
 function escapeHtml(value) {
