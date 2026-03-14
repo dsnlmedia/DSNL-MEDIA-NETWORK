@@ -296,6 +296,7 @@ export const HomePage = () => {
     { name: "Entertainment", icon: Gamepad2, count: 432, color: "bg-indigo-500" },
     { name: "Sports", icon: Trophy, count: 389, color: "bg-yellow-500" },
     { name: "DSNL Dialouge", icon: Zap, count: articlePosts?.length || 0, color: "bg-slate-500" },
+    { name: "Editor's Speak", icon: Edit3, count: editorialPosts?.length || 0, color: "bg-red-500" },
     { name: "DSNL Newsletter", icon: Newspaper, count: newsletterPosts?.length || 0, color: "bg-rose-500" },
     { name: "DSNL TV", icon: Tv, count: 298, color: "bg-teal-500" }
   ];
@@ -316,6 +317,11 @@ export const HomePage = () => {
 
     if (categoryName === 'DSNL Dialouge') {
       navigate('/blogs');
+      return;
+    }
+
+    if (categoryName === "Editor's Speak") {
+      navigate('/editorial-speaks');
       return;
     }
 
